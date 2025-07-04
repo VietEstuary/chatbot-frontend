@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Chatbot - Secure Version</title>
+    <title>PTB DECOFI - Secure Version</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
@@ -109,8 +109,8 @@
     <div class="container">
         <div class="chat-container">
             <div class="chat-header">
-                <h2>🤖 AI Chatbot</h2>
-                <small>Backend API Version - No API Key in Frontend!</small>
+                <h2>🤖 PTB DECOFI</h2>
+                <small>Power by Decofi</small>
                 <div class="connection-status">
                     <span class="status-dot offline" id="statusDot"></span>
                     <span id="statusText">Connecting...</span>
@@ -176,7 +176,7 @@
                     statusDot.className = 'status-dot online';
                     statusText.textContent = 'Connected';
                     errorAlert.style.display = 'none';
-                    backendInfo.textContent = `Backend: ${data.provider || 'Unknown'}`;
+                    //backendInfo.textContent = `Backend: ${data.provider || 'Unknown'}`;
                     
                     console.log('✅ Backend connected:', data);
                 } else {
