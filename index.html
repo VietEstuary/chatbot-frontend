@@ -239,20 +239,25 @@
                 
                 // Hide typing indicator
                 typingIndicator.style.display = 'none';
+
+
+            // Thay thế phần này trong sendMessage()
+            if (data.success && data.answer) {
+                const botMsgDiv = document.createElement('div');
+                botMsgDiv.className = 'message bot-message';
                 
-                if (data.success && data.answer) {
-                    const botMsgDiv = document.createElement('div');
-                    botMsgDiv.className = 'message bot-message';
-                    
-                    // Parse markdown
-                    try {
-                        botMsgDiv.innerHTML = marked.parse(data.answer);
-                    } catch {
-                        botMsgDiv.textContent = data.answer;
-                    }
-                    
-                    messagesDiv.appendChild(botMsgDiv);
-                } else {
+                // Xử lý xuống hàng trước khi parse markdown
+                try {
+                    // Chuyển \n thành 2 spaces + \n để markdown nhận diện
+                    const formattedAnswer = data.answer.replace(/\n/g, '  \n');
+                    botMsgDiv.innerHTML = marked.parse(formattedAnswer);
+                } catch {
+                    // Nếu marked.parse fail, dùng cách thủ công
+                    botMsgDiv.innerHTML = data.answer.replace(/\n/g, '<br>');
+                }
+                
+                messagesDiv.appendChild(botMsgDiv);
+            }        else {
                     throw new Error(data.error || 'No response');
                 }
 
