@@ -242,22 +242,18 @@
 
 
             // Thay thế phần này trong sendMessage()
-            if (data.success && data.answer) {
-                const botMsgDiv = document.createElement('div');
-                botMsgDiv.className = 'message bot-message';
-                
-                // Xử lý xuống hàng trước khi parse markdown
-                try {
-                    // Chuyển \n thành 2 spaces + \n để markdown nhận diện
-                    const formattedAnswer = data.answer.replace(/\n/g, '  \n');
-                    botMsgDiv.innerHTML = marked.parse(formattedAnswer);
-                } catch {
-                    // Nếu marked.parse fail, dùng cách thủ công
-                    botMsgDiv.innerHTML = data.answer.replace(/\n/g, '<br>');
-                }
-                
-                messagesDiv.appendChild(botMsgDiv);
-            }        else {
+           if (data.success && data.answer) {
+    const botMsgDiv = document.createElement('div');
+    botMsgDiv.className = 'message bot-message';
+    
+    // Chuyển \n thành <br> trực tiếp
+    const formattedAnswer = data.answer
+        .replace(/\n/g, '<br>')
+        .replace(/•/g, '•'); // Giữ nguyên bullet point
+    
+    botMsgDiv.innerHTML = formattedAnswer;
+    messagesDiv.appendChild(botMsgDiv);
+}     else {
                     throw new Error(data.error || 'No response');
                 }
 
