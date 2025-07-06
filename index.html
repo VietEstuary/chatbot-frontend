@@ -202,13 +202,13 @@
         .input-group {
             position: relative;
             background: #f7f7f8;
-            border-radius: 28px;
+            border-radius: 32px;  /* Tăng border-radius */
             border: 1px solid #e5e5e7;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
-            padding: 0 8px 0 20px; /* Tăng padding từ 0 8px 0 20px */
-           
+            padding: 0 8px 0 24px;  /* Tăng padding trái */
+            min-height: 64px;  /* Đặt chiều cao tối thiểu */
         }
 
         .input-group:focus-within {
@@ -216,15 +216,16 @@
             box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
         }
 
-        #userInput {
-            flex: 1;
-            border: none;
-            background: transparent;
-            padding: 16px 0;
-            font-size: 16px;
-            outline: none;
-            color: #1a1a1a;
-        }
+       #userInput {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 22px 0;  /* Tăng padding */
+    font-size: 17px;  /* Tăng font size một chút */
+    outline: none;
+    color: #1a1a1a;
+    line-height: 1.4;  /* Thêm line-height */
+}
 
         #userInput::placeholder {
             color: #8e8e93;
@@ -256,9 +257,9 @@
         .btn-primary {
             background: #007aff;
             color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 14px;
+            padding: 10px 20px;  /* Tăng padding cho nút */
+            border-radius: 24px;  /* Tăng border-radius */
+            font-size: 15px;  /* Tăng font size */
             font-weight: 500;
         }
 
@@ -513,4 +514,4 @@
         document.getElementById('userInput').focus();
     </script>
 </body>
-</html>node server.js
+</html>
