@@ -174,7 +174,28 @@
             max-width: 70%;
             word-wrap: break-word;
             white-space: pre-wrap;
-            line-height: 1.5;
+            line-height: 1.6;
+        }
+
+        /* Enhanced formatting for bot responses */
+        .bot-message .message-content strong {
+            color: #000;
+            font-weight: 600;
+        }
+
+        .bot-message .message-content em {
+            color: #666;
+            font-style: italic;
+        }
+
+        .bot-message .message-content ul,
+        .bot-message .message-content ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .bot-message .message-content li {
+            margin: 5px 0;
         }
 
         .typing-indicator {
@@ -202,13 +223,13 @@
         .input-group {
             position: relative;
             background: #f7f7f8;
-            border-radius: 32px;  /* Tăng border-radius */
+            border-radius: 32px;
             border: 1px solid #e5e5e7;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
-            padding: 0 8px 0 24px;  /* Tăng padding trái */
-            min-height: 64px;  /* Đặt chiều cao tối thiểu */
+            padding: 0 8px 0 24px;
+            min-height: 64px;
         }
 
         .input-group:focus-within {
@@ -216,16 +237,16 @@
             box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
         }
 
-       #userInput {
-    flex: 1;
-    border: none;
-    background: transparent;
-    padding: 22px 0;  /* Tăng padding */
-    font-size: 17px;  /* Tăng font size một chút */
-    outline: none;
-    color: #1a1a1a;
-    line-height: 1.4;  /* Thêm line-height */
-}
+        #userInput {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 22px 0;
+            font-size: 17px;
+            outline: none;
+            color: #1a1a1a;
+            line-height: 1.4;
+        }
 
         #userInput::placeholder {
             color: #8e8e93;
@@ -257,14 +278,19 @@
         .btn-primary {
             background: #007aff;
             color: white;
-            padding: 10px 20px;  /* Tăng padding cho nút */
-            border-radius: 24px;  /* Tăng border-radius */
-            font-size: 15px;  /* Tăng font size */
+            padding: 10px 20px;
+            border-radius: 24px;
+            font-size: 15px;
             font-weight: 500;
         }
 
         .btn-primary:hover {
             background: #0056b3;
+        }
+
+        .btn-primary:disabled {
+            background: #c7c7cc;
+            cursor: not-allowed;
         }
 
         .backend-info {
@@ -274,6 +300,49 @@
             font-size: 11px;
             opacity: 0.7;
             color: #8e8e93;
+        }
+
+        /* Quick actions */
+        .quick-actions {
+            padding: 10px 40px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .quick-action {
+            padding: 8px 16px;
+            background: #f0f0f5;
+            border: 1px solid #e5e5e7;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quick-action:hover {
+            background: #007aff;
+            color: white;
+            border-color: #007aff;
+        }
+
+        /* Loading animation for messages */
+        .message-loading {
+            display: inline-block;
+            width: 40px;
+            text-align: center;
+        }
+
+        .message-loading:after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: ''; }
+            40% { content: '.'; }
+            60% { content: '..'; }
+            80%, 100% { content: '...'; }
         }
 
         @media (max-width: 768px) {
@@ -310,6 +379,10 @@
             .typing-indicator {
                 padding: 0 20px 20px;
             }
+
+            .quick-actions {
+                padding: 10px 20px;
+            }
         }
     </style>
 </head>
@@ -319,12 +392,11 @@
             <div class="chat-header">
                 <!-- Logo DECOFI -->
                 <div class="company-logo">
-                    <img src="https://i.ibb.co/39HtzTxV/Decofi-logo.png" 
+                    <img src="https://i.ibb.co/39HtzTx/Decofi-logo.png" 
                          alt="DECOFI Logo" 
                          style="height: 65px; width: auto; object-fit: contain;">
                 </div>
                 
-                <!-- <h2>PTB DECOFI Assistant</h2>  -->
                 <small>Xây dựng chữ tín - Khẳng định niềm tin</small>
                 <div class="connection-status">
                     <span class="status-dot offline" id="statusDot"></span>
@@ -334,11 +406,18 @@
             
             <div class="error-alert" id="errorAlert">
                 <strong>⚠️ Lỗi kết nối!</strong><br>
-                Backend server chưa chạy. Hãy chạy: <code>npm start</code>
+                <span id="errorMessage">Backend server chưa chạy. Hãy chạy: <code>npm start</code></span>
             </div>
             
             <div class="chat-messages" id="chatMessages">
-                <!-- Initial message will be added by JS -->
+                <!-- Messages will be added here -->
+            </div>
+            
+            <div class="quick-actions" id="quickActions">
+                <div class="quick-action" onclick="sendQuickMessage('Tồn kho xi măng')">📦 Tồn kho xi măng</div>
+                <div class="quick-action" onclick="sendQuickMessage('Chống 4m nặng bao nhiêu?')">⚖️ Trọng lượng chống</div>
+                <div class="quick-action" onclick="sendQuickMessage('10 chống 3.8m nặng bao nhiêu')">📊 Tính toán</div>
+                <div class="quick-action" onclick="sendQuickMessage('Thông tin công ty')">ℹ️ Về DECOFI</div>
             </div>
             
             <div class="typing-indicator" id="typingIndicator">
@@ -350,9 +429,9 @@
                     <input type="text" 
                            id="userInput" 
                            placeholder="Hỏi bất kỳ điều gì ..."
-                           onkeypress="if(event.key==='Enter') sendMessage()">
+                           onkeypress="if(event.key==='Enter' && !event.shiftKey) sendMessage()">
                     <div class="input-group-append">
-                        <button class="btn btn-primary" onclick="sendMessage()">
+                        <button class="btn btn-primary" id="sendButton" onclick="sendMessage()">
                             Gửi
                         </button>
                     </div>
@@ -363,15 +442,28 @@
     </div>
 
     <script>
-        // Backend URL - có thể config
+        // Backend URL configuration
         const BACKEND_URL = window.location.hostname === 'localhost' 
             ? 'http://localhost:3000' 
-            : 'https://chatbot-backend-viet.onrender.com'; // Thay đổi khi deploy
+            : 'https://chatbot-backend-viet.onrender.com';
 
         let isConnected = false;
         let isFirstLoad = true;
+        let serverVersion = 'unknown';
 
-        // Helper function to add messages
+        // Format message content with proper HTML
+        function formatMessageContent(content) {
+            if (!content) return '';
+            
+            // Preserve formatting from backend
+            return content
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')  // Bold
+                .replace(/\*(.+?)\*/g, '<em>$1</em>')  // Italic
+                .replace(/`(.+?)`/g, '<code>$1</code>')  // Code
+                .replace(/\n/g, '<br>');  // Line breaks
+        }
+
+        // Add message to chat
         function addMessage(content, isUser = false) {
             const messagesDiv = document.getElementById('chatMessages');
             const messageDiv = document.createElement('div');
@@ -380,11 +472,10 @@
             const contentDiv = document.createElement('div');
             contentDiv.className = 'message-content';
             
-            // Format content với xuống hàng
-            if (typeof content === 'string') {
-                contentDiv.innerHTML = content.replace(/\n/g, '<br>');
+            if (isUser) {
+                contentDiv.textContent = content;
             } else {
-                contentDiv.innerHTML = content;
+                contentDiv.innerHTML = formatMessageContent(content);
             }
             
             messageDiv.appendChild(contentDiv);
@@ -397,19 +488,27 @@
             const statusDot = document.getElementById('statusDot');
             const statusText = document.getElementById('statusText');
             const errorAlert = document.getElementById('errorAlert');
+            const errorMessage = document.getElementById('errorMessage');
             const backendInfo = document.getElementById('backendInfo');
 
             try {
-                const response = await fetch(`${BACKEND_URL}/health`);
-                const data = await response.json();
+                const response = await fetch(`${BACKEND_URL}/health`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    },
+                    mode: 'cors'
+                });
                 
                 if (response.ok) {
+                    const data = await response.json();
                     isConnected = true;
                     statusDot.className = 'status-dot online';
                     statusText.textContent = 'Đã kết nối';
                     errorAlert.style.display = 'none';
+                    backendInfo.textContent = `Backend: ${BACKEND_URL.replace('http://', '').replace('https://', '')}`;
                     
-                    // Show greeting on first load
+                    // Show initial greeting
                     if (isFirstLoad) {
                         isFirstLoad = false;
                         showInitialGreeting();
@@ -417,101 +516,154 @@
                     
                     console.log('✅ Backend connected:', data);
                 } else {
-                    throw new Error('Backend unhealthy');
+                    throw new Error(`HTTP ${response.status}`);
                 }
             } catch (error) {
                 isConnected = false;
                 statusDot.className = 'status-dot offline';
                 statusText.textContent = 'Mất kết nối';
                 errorAlert.style.display = 'block';
-                backendInfo.textContent = 'Backend: Not connected';
                 
+                if (error.message.includes('fetch')) {
+                    errorMessage.innerHTML = `Không thể kết nối đến backend tại <code>${BACKEND_URL}</code><br>
+                        Kiểm tra: 1) Server đang chạy, 2) URL đúng, 3) CORS được cấu hình`;
+                } else {
+                    errorMessage.innerHTML = `Lỗi kết nối: ${error.message}`;
+                }
+                
+                backendInfo.textContent = 'Backend: Disconnected';
                 console.error('❌ Backend error:', error);
             }
         }
 
         // Show initial greeting
-        async function showInitialGreeting() {
-            try {
-                const response = await fetch(`${BACKEND_URL}/api/greeting`);
-                const data = await response.json();
-                
-                if (data.success && data.answer) {
-                    addMessage(data.answer);
-                }
-            } catch (error) {
-                addMessage('<strong>Xin chào!</strong> Tôi là trợ lý ảo của phòng thiết bị DECOFI.<br><br>💡 <em>Tôi có thể giúp bạn tra cứu thông tin về thiết bị, về công ty ...!</em>');
-            }
+        function showInitialGreeting() {
+            addMessage(`📦 **Xin chào! Tôi là trợ lý ảo của phòng thiết bị DECOFI.**
+
+Tôi có thể giúp bạn:
+• Tra cứu tồn kho vật tư
+• Tính toán trọng lượng thiết bị
+• Thông tin về công ty DECOFI
+• Và nhiều thông tin khác
+
+💡 *Hãy thử các câu hỏi mẫu bên dưới hoặc gõ câu hỏi của bạn!*`);
         }
 
-        // Check health on load and every 30s
-        checkBackendHealth();
-        setInterval(checkBackendHealth, 30000);
-
+        // Send message to backend
         async function sendMessage() {
             if (!isConnected) {
-                alert('Backend chưa kết nối! Hãy chạy server trước.');
+                alert('⚠️ Chưa kết nối được với server!\n\nVui lòng kiểm tra:\n1. Server backend đang chạy\n2. URL kết nối đúng');
                 return;
             }
 
-            const input = document.getElementById('userInput').value.trim();
-            if (!input) return;
+            const input = document.getElementById('userInput');
+            const sendButton = document.getElementById('sendButton');
+            const message = input.value.trim();
+            
+            if (!message) return;
 
             // Add user message
-            addMessage(input, true);
+            addMessage(message, true);
             
-            // Clear input
-            document.getElementById('userInput').value = '';
+            // Clear input and disable
+            input.value = '';
+            input.disabled = true;
+            sendButton.disabled = true;
             
             // Show typing indicator
             const typingIndicator = document.getElementById('typingIndicator');
             typingIndicator.style.display = 'block';
 
             try {
-                // Call backend API
                 const response = await fetch(`${BACKEND_URL}/api/chat`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
                     },
+                    mode: 'cors',
                     body: JSON.stringify({
-                        question: input
+                        question: message
                     })
                 });
 
                 const data = await response.json();
-                console.log('Response:', data);
                 
-                // Hide typing indicator
-                typingIndicator.style.display = 'none';
-
                 if (data.success && data.answer) {
                     addMessage(data.answer);
+                    
+                    // Log metadata if available
+                    if (data.metadata) {
+                        console.log('Response metadata:', data.metadata);
+                    }
                 } else {
-                    throw new Error(data.error || 'No response');
+                    throw new Error(data.error || 'Không có phản hồi từ server');
                 }
 
             } catch (error) {
                 console.error('Chat error:', error);
+                addMessage(`❌ **Lỗi:** ${error.message}\n\n*Vui lòng thử lại sau.*`);
+            } finally {
+                // Hide typing and re-enable input
                 typingIndicator.style.display = 'none';
-                
-                addMessage(`<div style="color: #dc3545;">
-                    <strong>❌ Lỗi:</strong> ${error.message}<br>
-                    <small>Kiểm tra backend server có đang chạy không.</small>
-                </div>`);
+                input.disabled = false;
+                sendButton.disabled = false;
+                input.focus();
             }
         }
 
-        // Test functions for debugging
-        function testBackend() {
-            fetch(`${BACKEND_URL}/health`)
-                .then(r => r.json())
-                .then(console.log)
-                .catch(console.error);
+        // Send quick action message
+        function sendQuickMessage(message) {
+            document.getElementById('userInput').value = message;
+            sendMessage();
         }
 
-        // Focus input
-        document.getElementById('userInput').focus();
+        // Check version endpoint
+        async function checkVersion() {
+            try {
+                const response = await fetch(`${BACKEND_URL}/version`);
+                if (response.ok) {
+                    const data = await response.json();
+                    serverVersion = data.version || 'unknown';
+                    console.log('Server version:', data);
+                }
+            } catch (error) {
+                console.log('Version check failed:', error);
+            }
+        }
+
+        // Initialize on load
+        window.addEventListener('load', async () => {
+            await checkBackendHealth();
+            await checkVersion();
+            
+            // Set up periodic health checks
+            setInterval(checkBackendHealth, 30000);
+            
+            // Focus input
+            document.getElementById('userInput').focus();
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Ctrl/Cmd + Enter to send
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                sendMessage();
+            }
+            
+            // ESC to clear input
+            if (e.key === 'Escape') {
+                document.getElementById('userInput').value = '';
+            }
+        });
+
+        // Debug functions
+        window.debug = {
+            testConnection: checkBackendHealth,
+            checkVersion: checkVersion,
+            backend: BACKEND_URL,
+            sendTest: () => sendQuickMessage('test')
+        };
     </script>
 </body>
 </html>
