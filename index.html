@@ -38,33 +38,31 @@
             position: relative;
         }
 
+        /* === THAY ĐỔI CSS TẠI ĐÂY === */
         .chat-header {
-            text-align: center;
-            padding: 20px 20px 30px;
+            padding: 15px 20px; /* Điều chỉnh padding */
             position: relative;
             background: white;
+            display: flex; /* Dùng Flexbox để căn chỉnh */
+            align-items: center; /* Căn các item theo chiều dọc */
+            border-bottom: 1px solid #f0f0f0; /* Thêm đường viền để tách biệt */
         }
 
         .company-logo {
-            height: 50px;
-            margin: 0 auto 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            height: 45px; /* Giảm chiều cao logo */
+            margin-right: 15px; /* Tạo khoảng cách với text bên phải */
+            /* Bỏ các thuộc tính căn giữa cũ */
         }
-
-        .chat-header h2 {
-            font-size: 28px;
-            font-weight: 300;
-            color: #1a1a1a;
-            letter-spacing: -0.5px;
-            margin-bottom: 5px;
+        
+        .header-text {
+            flex-grow: 1; /* Cho phần text chiếm hết không gian còn lại */
         }
-
-        .chat-header small {
-            color: #8e8e93;
-            font-size: 14px;
+        
+        .header-text small {
+             color: #8e8e93;
+             font-size: 14px;
         }
+        /* === KẾT THÚC THAY ĐỔI CSS === */
 
         .connection-status {
             position: absolute;
@@ -414,7 +412,7 @@
             </div>
             
             <div class="quick-actions" id="quickActions">
-                <div class="quick-action" onclick="sendQuickMessage('Tồn kho')">📦 Tồn kho </div>
+                <div class="quick-action" onclick="sendQuickMessage('Tồn kho cùm xoay')">📦 Tồn kho </div>
                 <div class="quick-action" onclick="sendQuickMessage('Chống 4m nặng bao nhiêu?')">⚖️ Trọng lượng chống</div>
                 <div class="quick-action" onclick="sendQuickMessage('10 chống 2.5m nặng bao nhiêu')">📊 Tính toán</div>
                 <div class="quick-action" onclick="sendQuickMessage('Thông tin công ty')">ℹ️ Về DECOFI</div>
