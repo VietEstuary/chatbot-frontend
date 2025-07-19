@@ -644,8 +644,10 @@ Tôi có thể giúp bạn:
                 console.error('Chat error:', error);
                 addMessage(`❌ **Lỗi:** ${error.message}\n\n*Vui lòng thử lại sau.*`);
             } finally {
-                // Hide typing and re-enable input
-                typingIndicator.style.display = 'none';
+                // Hide typing only if not streaming (error case)
+                if (!currentEventSource) {
+                    typingIndicator.style.display = 'none';
+                }
                 input.disabled = false;
                 sendButton.disabled = false;
                 input.focus();
@@ -686,9 +688,6 @@ Tôi có thể giúp bạn:
                 currentEventSource.close();
             }
 
-            // Hide typing indicator when streaming starts
-            document.getElementById('typingIndicator').style.display = 'none';
-
             // Create unique message ID for streaming
             const messageId = 'stream-' + Date.now();
             let fullResponse = '';
@@ -702,6 +701,9 @@ Tôi có thể giúp bạn:
             // Handle incoming chunks
             currentEventSource.onmessage = (event) => {
                 try {
+                    // Hide typing indicator when first chunk arrives
+                    document.getElementById('typingIndicator').style.display = 'none';
+                    
                     const data = JSON.parse(event.data);
                     fullResponse += data.chunk;
                     
@@ -732,6 +734,9 @@ Tôi có thể giúp bạn:
                 console.error('Streaming error:', error);
                 currentEventSource.close();
                 currentEventSource = null;
+                
+                // Hide typing indicator on error
+                document.getElementById('typingIndicator').style.display = 'none';
                 
                 // If no response received, fall back to normal API
                 if (!fullResponse) {
