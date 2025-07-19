@@ -38,31 +38,28 @@
             position: relative;
         }
 
-        /* === THAY ĐỔI CSS TẠI ĐÂY === */
         .chat-header {
-            padding: 15px 20px; /* Điều chỉnh padding */
+            padding: 15px 20px;
             position: relative;
             background: white;
-            display: flex; /* Dùng Flexbox để căn chỉnh */
-            align-items: center; /* Căn các item theo chiều dọc */
-            border-bottom: 1px solid #f0f0f0; /* Thêm đường viền để tách biệt */
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #f0f0f0;
         }
 
         .company-logo {
-            height: 45px; /* Giảm chiều cao logo */
-            margin-right: 15px; /* Tạo khoảng cách với text bên phải */
-            /* Bỏ các thuộc tính căn giữa cũ */
+            height: 45px;
+            margin-right: 15px;
         }
         
         .header-text {
-            flex-grow: 1; /* Cho phần text chiếm hết không gian còn lại */
+            flex-grow: 1;
         }
         
         .header-text small {
              color: #8e8e93;
              font-size: 14px;
         }
-        /* === KẾT THÚC THAY ĐỔI CSS === */
 
         .connection-status {
             position: absolute;
@@ -173,10 +170,10 @@
             word-wrap: break-word;
             white-space: pre-wrap;
             line-height: 1.6;
+            position: relative;
         }
 
-
-         /* Typing cursor for streaming */
+        /* Typing cursor for streaming */
         .typing-cursor {
             display: inline-block;
             width: 2px;
@@ -191,10 +188,6 @@
             0%, 49% { opacity: 1; }
             50%, 100% { opacity: 0; }
         }
-
-
-
-
 
         /* Enhanced formatting for bot responses */
         .bot-message .message-content strong {
@@ -215,6 +208,13 @@
 
         .bot-message .message-content li {
             margin: 5px 0;
+        }
+
+        .bot-message .message-content code {
+            background: #f4f4f4;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: monospace;
         }
 
         .typing-indicator {
@@ -312,7 +312,7 @@
             cursor: not-allowed;
         }
 
-         /* Streaming toggle */
+        /* Streaming toggle */
         .streaming-toggle {
             position: absolute;
             bottom: 10px;
@@ -327,10 +327,6 @@
         .streaming-toggle input[type="checkbox"] {
             cursor: pointer;
         }
-
-
-
-
 
         .backend-info {
             position: absolute;
@@ -422,6 +418,13 @@
             .quick-actions {
                 padding: 10px 20px;
             }
+
+            .streaming-toggle {
+                position: relative;
+                bottom: auto;
+                left: auto;
+                margin-bottom: 10px;
+            }
         }
     </style>
 </head>
@@ -429,7 +432,6 @@
     <div class="container">
         <div class="chat-container">
             <div class="chat-header">
-                <!-- Logo DECOFI -->
                 <div class="company-logo">
                     <img src="https://i.ibb.co/39HtzTxV/Decofi-logo.png" 
                          alt="DECOFI Logo" 
@@ -453,7 +455,7 @@
             </div>
             
             <div class="quick-actions" id="quickActions">
-                <div class="quick-action" onclick="sendQuickMessage('Tồn kho cùm xoay')">📦 Tồn kho </div>
+                <div class="quick-action" onclick="sendQuickMessage('Tồn kho cùm xoay')">📦 Tồn kho</div>
                 <div class="quick-action" onclick="sendQuickMessage('Chống 4m nặng bao nhiêu?')">⚖️ Trọng lượng chống</div>
                 <div class="quick-action" onclick="sendQuickMessage('10 chống 2.5m nặng bao nhiêu')">📊 Tính toán</div>
                 <div class="quick-action" onclick="sendQuickMessage('Thông tin công ty')">ℹ️ Về DECOFI</div>
@@ -475,6 +477,10 @@
                         </button>
                     </div>
                 </div>
+                <div class="streaming-toggle">
+                    <input type="checkbox" id="streamingToggle" checked>
+                    <label for="streamingToggle">Hiệu ứng đánh máy</label>
+                </div>
                 <div class="backend-info" id="backendInfo"></div>
             </div>
         </div>
@@ -489,25 +495,38 @@
         let isConnected = false;
         let isFirstLoad = true;
         let serverVersion = 'unknown';
-         let currentEventSource = null;
+        let currentEventSource = null;
         let isStreamingEnabled = true;
+
         // Format message content with proper HTML
         function formatMessageContent(content) {
             if (!content) return '';
             
-            // Preserve formatting from backend
             return content
-                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')  // Bold
-                .replace(/\*(.+?)\*/g, '<em>$1</em>')  // Italic
-                .replace(/`(.+?)`/g, '<code>$1</code>')  // Code
-                .replace(/\n/g, '<br>');  // Line breaks
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.+?)\*/g, '<em>$1</em>')
+                .replace(/`(.+?)`/g, '<code>$1</code>')
+                .replace(/\n/g, '<br>');
         }
 
         // Add message to chat
-        function addMessage(content, isUser = false) {
+        function addMessage(content, isUser = false, messageId = null) {
             const messagesDiv = document.getElementById('chatMessages');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${isUser ? 'user' : 'bot'}-message`;
+            
+            let messageDiv;
+            if (messageId) {
+                messageDiv = document.getElementById(messageId);
+                if (!messageDiv) {
+                    messageDiv = document.createElement('div');
+                    messageDiv.id = messageId;
+                    messageDiv.className = `message ${isUser ? 'user' : 'bot'}-message`;
+                    messagesDiv.appendChild(messageDiv);
+                }
+            } else {
+                messageDiv = document.createElement('div');
+                messageDiv.className = `message ${isUser ? 'user' : 'bot'}-message`;
+                messagesDiv.appendChild(messageDiv);
+            }
             
             const contentDiv = document.createElement('div');
             contentDiv.className = 'message-content';
@@ -518,11 +537,12 @@
                 contentDiv.innerHTML = formatMessageContent(content);
             }
             
+            messageDiv.innerHTML = '';
             messageDiv.appendChild(contentDiv);
-            messagesDiv.appendChild(messageDiv);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            
+            return messageDiv;
         }
-
 
         // Add streaming message with typing cursor
         function addStreamingMessage(content, messageId, isComplete = false) {
@@ -551,11 +571,6 @@
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
 
-
-
-
-
-
         // Check backend connection
         async function checkBackendHealth() {
             const statusDot = document.getElementById('statusDot');
@@ -581,7 +596,6 @@
                     errorAlert.style.display = 'none';
                     backendInfo.textContent = `Backend: ${BACKEND_URL.replace('http://', '').replace('https://', '')}`;
                     
-                    // Show initial greeting
                     if (isFirstLoad) {
                         isFirstLoad = false;
                         showInitialGreeting();
@@ -622,7 +636,7 @@ Tôi có thể giúp bạn:
 💡 *Hãy thử các câu hỏi mẫu bên dưới hoặc gõ câu hỏi của bạn!*`);
         }
 
-        // Send message to backend
+        // UPDATED SEND MESSAGE FUNCTION - WITH STREAMING
         async function sendMessage() {
             if (!isConnected) {
                 alert('⚠️ Chưa kết nối được với server!\n\nVui lòng kiểm tra:\n1. Server backend đang chạy\n2. URL kết nối đúng');
@@ -634,6 +648,9 @@ Tôi có thể giúp bạn:
             const message = input.value.trim();
             
             if (!message) return;
+
+            // Check if streaming is enabled
+            isStreamingEnabled = document.getElementById('streamingToggle').checked;
 
             // Add user message
             addMessage(message, true);
@@ -648,31 +665,13 @@ Tôi có thể giúp bạn:
             typingIndicator.style.display = 'block';
 
             try {
-                const response = await fetch(`${BACKEND_URL}/api/chat`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    mode: 'cors',
-                    body: JSON.stringify({
-                        question: message
-                    })
-                });
-
-                const data = await response.json();
-                
-                if (data.success && data.answer) {
-                    addMessage(data.answer);
-                    
-                    // Log metadata if available
-                    if (data.metadata) {
-                        console.log('Response metadata:', data.metadata);
-                    }
+                if (isStreamingEnabled) {
+                    // Use streaming endpoint
+                    await sendStreamingMessage(message);
                 } else {
-                    throw new Error(data.error || 'Không có phản hồi từ server');
+                    // Use normal endpoint
+                    await sendNormalMessage(message);
                 }
-
             } catch (error) {
                 console.error('Chat error:', error);
                 addMessage(`❌ **Lỗi:** ${error.message}\n\n*Vui lòng thử lại sau.*`);
@@ -685,11 +684,7 @@ Tôi có thể giúp bạn:
             }
         }
 
-      
-
-
-        //nhã chữ như claude ai
-         // Send normal message (without streaming)
+        // Send normal message (without streaming)
         async function sendNormalMessage(message) {
             const response = await fetch(`${BACKEND_URL}/api/chat`, {
                 method: 'POST',
@@ -708,7 +703,6 @@ Tôi có thể giúp bạn:
             if (data.success && data.answer) {
                 addMessage(data.answer);
                 
-                // Log metadata if available
                 if (data.metadata) {
                     console.log('Response metadata:', data.metadata);
                 }
@@ -723,6 +717,9 @@ Tôi có thể giúp bạn:
             if (currentEventSource) {
                 currentEventSource.close();
             }
+
+            // Hide typing indicator when streaming starts
+            document.getElementById('typingIndicator').style.display = 'none';
 
             // Create unique message ID for streaming
             const messageId = 'stream-' + Date.now();
@@ -781,18 +778,16 @@ Tôi có thể giúp bạn:
             };
         }
 
-
-
-
-          // Send quick action message
+        // Send quick action message
         function sendQuickMessage(message) {
             document.getElementById('userInput').value = message;
             sendMessage();
         }
+
         // Check version endpoint
         async function checkVersion() {
             try {
-                const response = await fetch(`${BACKEND_URL}/version`);
+                const response = await fetch(`${BACKEND_URL}/api/chat/version`);
                 if (response.ok) {
                     const data = await response.json();
                     serverVersion = data.version || 'unknown';
@@ -813,6 +808,18 @@ Tôi có thể giúp bạn:
             
             // Focus input
             document.getElementById('userInput').focus();
+            
+            // Load streaming preference from localStorage
+            const savedStreamingPref = localStorage.getItem('streamingEnabled');
+            if (savedStreamingPref !== null) {
+                document.getElementById('streamingToggle').checked = savedStreamingPref === 'true';
+            }
+        });
+
+        // Save streaming preference
+        document.getElementById('streamingToggle').addEventListener('change', (e) => {
+            localStorage.setItem('streamingEnabled', e.target.checked);
+            console.log('Streaming', e.target.checked ? 'enabled' : 'disabled');
         });
 
         // Keyboard shortcuts
@@ -828,12 +835,25 @@ Tôi có thể giúp bạn:
             }
         });
 
+        // Clean up EventSource on page unload
+        window.addEventListener('beforeunload', () => {
+            if (currentEventSource) {
+                currentEventSource.close();
+            }
+        });
+
         // Debug functions
         window.debug = {
             testConnection: checkBackendHealth,
             checkVersion: checkVersion,
             backend: BACKEND_URL,
-            sendTest: () => sendQuickMessage('test')
+            sendTest: () => sendQuickMessage('test'),
+            toggleStreaming: () => {
+                const toggle = document.getElementById('streamingToggle');
+                toggle.checked = !toggle.checked;
+                toggle.dispatchEvent(new Event('change'));
+            },
+            testStream: () => sendQuickMessage('tồn kho xi măng')
         };
     </script>
 </body>
