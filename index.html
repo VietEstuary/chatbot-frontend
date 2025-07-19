@@ -38,33 +38,31 @@
             position: relative;
         }
 
+        /* === THAY ĐỔI CSS TẠI ĐÂY === */
         .chat-header {
-            text-align: center;
-            padding: 20px 20px 30px;
+            padding: 15px 20px; /* Điều chỉnh padding */
             position: relative;
             background: white;
+            display: flex; /* Dùng Flexbox để căn chỉnh */
+            align-items: center; /* Căn các item theo chiều dọc */
+            border-bottom: 1px solid #f0f0f0; /* Thêm đường viền để tách biệt */
         }
 
         .company-logo {
-            height: 50px;
-            margin: 0 auto 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            height: 45px; /* Giảm chiều cao logo */
+            margin-right: 15px; /* Tạo khoảng cách với text bên phải */
+            /* Bỏ các thuộc tính căn giữa cũ */
         }
-
-        .chat-header h2 {
-            font-size: 28px;
-            font-weight: 300;
-            color: #1a1a1a;
-            letter-spacing: -0.5px;
-            margin-bottom: 5px;
+        
+        .header-text {
+            flex-grow: 1; /* Cho phần text chiếm hết không gian còn lại */
         }
-
-        .chat-header small {
-            color: #8e8e93;
-            font-size: 14px;
+        
+        .header-text small {
+             color: #8e8e93;
+             font-size: 14px;
         }
+        /* === KẾT THÚC THAY ĐỔI CSS === */
 
         .connection-status {
             position: absolute;
@@ -176,6 +174,27 @@
             white-space: pre-wrap;
             line-height: 1.6;
         }
+
+
+         /* Typing cursor for streaming */
+        .typing-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background-color: #007aff;
+            animation: blink 1s infinite;
+            margin-left: 2px;
+            vertical-align: text-bottom;
+        }
+
+        @keyframes blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+
+
+
+
 
         /* Enhanced formatting for bot responses */
         .bot-message .message-content strong {
@@ -292,6 +311,26 @@
             background: #c7c7cc;
             cursor: not-allowed;
         }
+
+         /* Streaming toggle */
+        .streaming-toggle {
+            position: absolute;
+            bottom: 10px;
+            left: 20px;
+            font-size: 12px;
+            color: #8e8e93;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .streaming-toggle input[type="checkbox"] {
+            cursor: pointer;
+        }
+
+
+
+
 
         .backend-info {
             position: absolute;
@@ -414,7 +453,7 @@
             </div>
             
             <div class="quick-actions" id="quickActions">
-                <div class="quick-action" onclick="sendQuickMessage('Tồn kho')">📦 Tồn kho</div>
+                <div class="quick-action" onclick="sendQuickMessage('Tồn kho cùm xoay')">📦 Tồn kho </div>
                 <div class="quick-action" onclick="sendQuickMessage('Chống 4m nặng bao nhiêu?')">⚖️ Trọng lượng chống</div>
                 <div class="quick-action" onclick="sendQuickMessage('10 chống 2.5m nặng bao nhiêu')">📊 Tính toán</div>
                 <div class="quick-action" onclick="sendQuickMessage('Thông tin công ty')">ℹ️ Về DECOFI</div>
@@ -450,7 +489,8 @@
         let isConnected = false;
         let isFirstLoad = true;
         let serverVersion = 'unknown';
-
+         let currentEventSource = null;
+        let isStreamingEnabled = true;
         // Format message content with proper HTML
         function formatMessageContent(content) {
             if (!content) return '';
@@ -482,6 +522,39 @@
             messagesDiv.appendChild(messageDiv);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
+
+
+        // Add streaming message with typing cursor
+        function addStreamingMessage(content, messageId, isComplete = false) {
+            const messagesDiv = document.getElementById('chatMessages');
+            
+            let messageDiv = document.getElementById(messageId);
+            if (!messageDiv) {
+                messageDiv = document.createElement('div');
+                messageDiv.id = messageId;
+                messageDiv.className = 'message bot-message';
+                messagesDiv.appendChild(messageDiv);
+            }
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            
+            const formattedContent = formatMessageContent(content);
+            if (!isComplete && isStreamingEnabled) {
+                contentDiv.innerHTML = formattedContent + '<span class="typing-cursor"></span>';
+            } else {
+                contentDiv.innerHTML = formattedContent;
+            }
+            
+            messageDiv.innerHTML = '';
+            messageDiv.appendChild(contentDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+
+
+
+
 
         // Check backend connection
         async function checkBackendHealth() {
@@ -612,12 +685,110 @@ Tôi có thể giúp bạn:
             }
         }
 
-        // Send quick action message
+      
+
+
+        //nhã chữ như claude ai
+         // Send normal message (without streaming)
+        async function sendNormalMessage(message) {
+            const response = await fetch(`${BACKEND_URL}/api/chat`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                mode: 'cors',
+                body: JSON.stringify({
+                    question: message
+                })
+            });
+
+            const data = await response.json();
+            
+            if (data.success && data.answer) {
+                addMessage(data.answer);
+                
+                // Log metadata if available
+                if (data.metadata) {
+                    console.log('Response metadata:', data.metadata);
+                }
+            } else {
+                throw new Error(data.error || 'Không có phản hồi từ server');
+            }
+        }
+
+        // Send streaming message
+        async function sendStreamingMessage(message) {
+            // Close any existing EventSource
+            if (currentEventSource) {
+                currentEventSource.close();
+            }
+
+            // Create unique message ID for streaming
+            const messageId = 'stream-' + Date.now();
+            let fullResponse = '';
+            let isStreamComplete = false;
+
+            // Create EventSource for streaming
+            currentEventSource = new EventSource(
+                `${BACKEND_URL}/api/chat/stream?question=${encodeURIComponent(message)}`
+            );
+
+            // Handle incoming chunks
+            currentEventSource.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    fullResponse += data.chunk;
+                    
+                    // Update message with typing effect
+                    addStreamingMessage(fullResponse, messageId, data.isComplete);
+                    
+                    if (data.isComplete) {
+                        isStreamComplete = true;
+                    }
+                } catch (error) {
+                    console.error('Error parsing stream data:', error);
+                }
+            };
+
+            // Handle completion
+            currentEventSource.addEventListener('complete', (event) => {
+                currentEventSource.close();
+                currentEventSource = null;
+                
+                // Remove typing cursor
+                addStreamingMessage(fullResponse, messageId, true);
+                
+                console.log('Streaming completed');
+            });
+
+            // Handle errors
+            currentEventSource.onerror = (error) => {
+                console.error('Streaming error:', error);
+                currentEventSource.close();
+                currentEventSource = null;
+                
+                // If no response received, fall back to normal API
+                if (!fullResponse) {
+                    console.log('Falling back to normal API...');
+                    sendNormalMessage(message).catch(err => {
+                        addMessage(`❌ **Lỗi streaming:** Không thể nhận phản hồi từ server.`);
+                    });
+                } else {
+                    // Just remove cursor if we have partial response
+                    addStreamingMessage(fullResponse, messageId, true);
+                }
+            };
+        }
+
+
+
+
+          // Send quick action message
         function sendQuickMessage(message) {
             document.getElementById('userInput').value = message;
             sendMessage();
         }
-
         // Check version endpoint
         async function checkVersion() {
             try {
