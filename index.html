@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -311,8 +312,6 @@
             cursor: not-allowed;
         }
 
-        /* Streaming toggle - Removed */
-
         .backend-info {
             position: absolute;
             bottom: 10px;
@@ -403,8 +402,6 @@
             .quick-actions {
                 padding: 10px 20px;
             }
-
-
         }
     </style>
 </head>
@@ -457,7 +454,6 @@
                         </button>
                     </div>
                 </div>
-
                 <div class="backend-info" id="backendInfo"></div>
             </div>
         </div>
@@ -473,6 +469,7 @@
         let isFirstLoad = true;
         let serverVersion = 'unknown';
         let currentEventSource = null;
+        let typingTimeout = null; // Thêm biến để lưu timeout
 
         // Format message content with proper HTML
         function formatMessageContent(content) {
@@ -637,6 +634,11 @@ Tôi có thể giúp bạn:
             const typingIndicator = document.getElementById('typingIndicator');
             typingIndicator.style.display = 'block';
 
+            // THÊM DELAY 3 GIÂY TRƯỚC KHI GỌI STREAMING
+            await new Promise(resolve => {
+                typingTimeout = setTimeout(resolve, 3000); // 3 giây
+            });
+
             try {
                 // Always use streaming
                 await sendStreamingMessage(message);
@@ -644,6 +646,11 @@ Tôi có thể giúp bạn:
                 console.error('Chat error:', error);
                 addMessage(`❌ **Lỗi:** ${error.message}\n\n*Vui lòng thử lại sau.*`);
             } finally {
+                // Clear timeout if exists
+                if (typingTimeout) {
+                    clearTimeout(typingTimeout);
+                    typingTimeout = null;
+                }
                 // Hide typing only if not streaming (error case)
                 if (!currentEventSource) {
                     typingIndicator.style.display = 'none';
@@ -692,6 +699,7 @@ Tôi có thể giúp bạn:
             const messageId = 'stream-' + Date.now();
             let fullResponse = '';
             let isStreamComplete = false;
+            let firstChunkReceived = false; // Flag để track chunk đầu tiên
 
             // Create EventSource for streaming
             currentEventSource = new EventSource(
@@ -701,8 +709,11 @@ Tôi có thể giúp bạn:
             // Handle incoming chunks
             currentEventSource.onmessage = (event) => {
                 try {
-                    // Hide typing indicator when first chunk arrives
-                    document.getElementById('typingIndicator').style.display = 'none';
+                    // Hide typing indicator only when first chunk arrives
+                    if (!firstChunkReceived) {
+                        document.getElementById('typingIndicator').style.display = 'none';
+                        firstChunkReceived = true;
+                    }
                     
                     const data = JSON.parse(event.data);
                     fullResponse += data.chunk;
@@ -771,6 +782,19 @@ Tôi có thể giúp bạn:
             }
         }
 
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Ctrl/Cmd + Enter to send
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                sendMessage();
+            }
+            
+            // ESC to clear input
+            if (e.key === 'Escape') {
+                document.getElementById('userInput').value = '';
+            }
+        });
+
         // Initialize on load
         window.addEventListener('load', async () => {
             await checkBackendHealth();
@@ -788,6 +812,9 @@ Tôi có thể giúp bạn:
             if (currentEventSource) {
                 currentEventSource.close();
             }
+            if (typingTimeout) {
+                clearTimeout(typingTimeout);
+            }
         });
 
         // Debug functions
@@ -796,7 +823,14 @@ Tôi có thể giúp bạn:
             checkVersion: checkVersion,
             backend: BACKEND_URL,
             sendTest: () => sendQuickMessage('test'),
-            testStream: () => sendQuickMessage('tồn kho xi măng')
+            testStream: () => sendQuickMessage('tồn kho xi măng'),
+            skipTypingDelay: () => {
+                // Hàm debug để skip delay khi test
+                if (typingTimeout) {
+                    clearTimeout(typingTimeout);
+                    document.getElementById('typingIndicator').style.display = 'none';
+                }
+            }
         };
     </script>
 </body>
