@@ -661,14 +661,17 @@
 
         // Send normal message (fallback)
         async function sendNormalMessage(message) {
-            // Thay vì streaming
-            // Dùng POST thông thường
-            const response = await fetch('/api/chat', {
+            const response = await fetch(`${BACKEND_URL}/api/chat`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ question: question })
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                mode: 'cors',
+                body: JSON.stringify({
+                    question: message
+                })
             });
-            const data = await response.json();
 
             const data = await response.json();
             
