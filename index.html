@@ -423,9 +423,29 @@
 <body>
     <div class="container">
         <div class="chat-container">
-             <div class="chat-messages" id="chatMessages">
-                <!-- Messages will be added here -->
+
+
+
+<div class="container">
+        <div class="chat-container">
+            <div class="chat-header">
+                <div class="connection-status">
+                    <span class="status-dot offline" id="statusDot"></span>
+                    <span id="statusText">Đang kết nối...</span>
+                </div>
             </div>
+
+            <div class="error-alert" id="errorAlert">
+                <strong>⚠️ Lỗi kết nối!</strong><br>
+                <span id="errorMessage">Backend server chưa chạy. Hãy chạy: <code>npm start</code></span>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+                <!-- Messages will be added here -->
+            </div> 
+
+
+            
             
             <div class="quick-actions" id="quickActions">
                 <div class="quick-action" onclick="sendQuickMessage('Tồn kho cùm xoay')">📦 Tồn kho</div>
