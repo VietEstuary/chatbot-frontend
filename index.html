@@ -363,13 +363,7 @@
                 <!-- Messages will be added here -->
             </div>
             
-            <!-- Quick actions -->
-            <div class="quick-actions" id="quickActions">
-                <div class="quick-action" onclick="sendQuickMessage('Tồn kho cùm xoay')">📦 Tồn kho</div>
-                <div class="quick-action" onclick="sendQuickMessage('Chống 4m nặng bao nhiêu?')">⚖️ Trọng lượng</div>
-                <div class="quick-action" onclick="sendQuickMessage('10 chống 2.5m nặng bao nhiêu')">📊 Tính toán</div>
-                <div class="quick-action" onclick="sendQuickMessage('Thông tin công ty')">ℹ️ Về DECOFI</div>
-            </div>
+            
             
             <!-- Typing indicator -->
             <div class="typing-indicator" id="typingIndicator">
@@ -513,16 +507,35 @@
         }
 
         // Show initial greeting
+        /**
+         * Hiển thị lời chào ban đầu khi người dùng bắt đầu cuộc trò chuyện.
+         * Tin nhắn này giới thiệu về trợ lý ảo và gợi ý các câu hỏi mẫu.
+         */
         function showInitialGreeting() {
-            addMessage(`📦 **Xin chào! Tôi là trợ lý ảo của phòng thiết bị DECOFI.**
+            // Nội dung tin nhắn chào mừng sử dụng cú pháp Markdown để định dạng
+            const greetingMessage = `📦 **Xin chào! Tôi là trợ lý ảo của phòng thiết bị DECOFI.**
 
-Tôi có thể giúp bạn:
-• Tra cứu tồn kho vật tư
-• Tính toán trọng lượng thiết bị
-• Thông tin về công ty DECOFI
-• Và nhiều thông tin khác
+        Tôi có thể giúp bạn:
+        * Tra cứu ngân sách thiết bị
+        * Tra cứu tồn kho tại các công trường
+        * Tra cứu danh mục thiết bị
+        * Tính toán trọng lượng vật tư
+        * Cung cấp thông tin về công ty DECOFI
+        * Và nhiều tác vụ khác...
 
-💡 *Hãy thử các câu hỏi mẫu bên dưới hoặc gõ câu hỏi của bạn!*`);
+        💡 *Hãy thử các câu hỏi mẫu bên dưới hoặc tự nhập câu hỏi của bạn!*
+
+        ---
+
+        ***Gợi ý một số câu hỏi:***
+        * *ngân sách ván phủ phim*
+        * *tồn kho giàn giáo tại công trường Charm Diamond*
+        * *tính trọng lượng 2000 chống 1.5m và 500 giằng 1m*
+        * *thông tin công ty DECOFI*
+        * *danh mục thiết bị hiện có*`;
+
+            // Gọi hàm để hiển thị tin nhắn trong giao diện chat
+            addMessage(greetingMessage);
         }
 
         // Send message function
