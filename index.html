@@ -53,6 +53,169 @@
             position: relative;
         }
 
+        /* Sidebar Menu */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 260px;
+            background: #fafafa;
+            border-right: 1px solid #e5e5e7;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.active {
+            transform: translateX(0);
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #e5e5e7;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-logo img {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+        }
+
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .sidebar-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        .sidebar-close:hover {
+            background: #e5e5e7;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            margin-bottom: 4px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .nav-item:hover {
+            background: #e9ecef;
+        }
+
+        .nav-item.active {
+            background: #007aff;
+            color: white;
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .nav-text {
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        /* Menu Toggle Button */
+        .menu-toggle {
+            position: fixed;
+            left: 20px;
+            top: 20px;
+            width: 44px;
+            height: 44px;
+            background: white;
+            border: 1px solid #e5e5e7;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s;
+            z-index: 999;
+        }
+
+        .menu-toggle:hover {
+            background: #f7f7f8;
+            transform: scale(1.05);
+        }
+
+        .menu-icon {
+            width: 20px;
+            height: 16px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .menu-icon span {
+            display: block;
+            width: 100%;
+            height: 2px;
+            background: #333;
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+
+        /* Overlay */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 999;
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
         /* Simple header for connection status */
         .status-bar {
             padding: 10px 20px;
@@ -386,6 +549,53 @@
     </style>
 </head>
 <body>
+    <!-- Menu Toggle Button -->
+    <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
+        <div class="menu-icon">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </button>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <img src="https://i.ibb.co/HpP19dtk/image.png" alt="DECOFI">
+                <span class="sidebar-title">DECOFI</span>
+            </div>
+            <button class="sidebar-close" onclick="toggleSidebar()">
+                ✕
+            </button>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item active" onclick="selectNavItem(this, 'dự án')">
+                <span class="nav-icon">📁</span>
+                <span class="nav-text">Dự án</span>
+            </a>
+            <a href="#" class="nav-item" onclick="selectNavItem(this, 'thiết bị')">
+                <span class="nav-icon">🏗️</span>
+                <span class="nav-text">Thiết bị</span>
+            </a>
+            <a href="#" class="nav-item" onclick="selectNavItem(this, 'ngân sách')">
+                <span class="nav-icon">💰</span>
+                <span class="nav-text">Ngân sách</span>
+            </a>
+            <a href="#" class="nav-item" onclick="selectNavItem(this, 'tồn kho')">
+                <span class="nav-icon">📦</span>
+                <span class="nav-text">Tồn kho</span>
+            </a>
+            <a href="#" class="nav-item" onclick="selectNavItem(this, 'blog')">
+                <span class="nav-icon">📝</span>
+                <span class="nav-text">Blog</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
     <div class="container">
         <div class="chat-container">
             <!-- Status bar -->
