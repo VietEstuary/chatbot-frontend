@@ -39,6 +39,8 @@
             padding: 20px;
             height: 100vh;
             display: flex;
+            position: relative;
+            z-index: 1;
         }
 
         .chat-container {
@@ -60,13 +62,14 @@
             top: 0;
             height: 100%;
             width: 260px;
-            background: #fafafa;
+            background: #ffffff;
             border-right: 1px solid #e5e5e7;
             transform: translateX(-100%);
             transition: transform 0.3s ease;
-            z-index: 1000;
+            z-index: 10000;
             display: flex;
             flex-direction: column;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
         }
 
         .sidebar.active {
@@ -171,7 +174,7 @@
             justify-content: center;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             transition: all 0.2s;
-            z-index: 999;
+            z-index: 9999;
         }
 
         .menu-toggle:hover {
@@ -208,7 +211,7 @@
             opacity: 0;
             visibility: hidden;
             transition: all 0.3s;
-            z-index: 999;
+            z-index: 9998;
         }
 
         .sidebar-overlay.active {
@@ -542,8 +545,11 @@
                 display: none;
             }
 
-            .company-info {
-                display: none;
+            .menu-toggle {
+                left: 10px;
+                top: 10px;
+                width: 40px;
+                height: 40px;
             }
         }
     </style>
@@ -965,6 +971,34 @@
             sendTest: () => sendQuickMessage('test'),
             testStream: () => sendQuickMessage('tồn kho xi măng')
         };
+
+        // Sidebar functions
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        function selectNavItem(element, section) {
+            // Remove active class from all items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Add active class to clicked item
+            element.classList.add('active');
+            
+            // Close sidebar
+            toggleSidebar();
+            
+            // Here you can add logic to handle section changes
+            console.log('Selected section:', section);
+            
+            // Optional: Show a message in chat
+            addMessage(`Bạn đã chọn mục: **${section}**. Tính năng này sẽ được cập nhật sau.`);
+        }
     </script>
 </body>
 </html>
