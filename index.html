@@ -60,8 +60,38 @@
             border-bottom: 1px solid #f0f0f0;
             display: flex;
             align-items: center;
-            justify-content: flex-end;
-            min-height: 40px;
+            justify-content: space-between;
+            min-height: 50px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .company-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .company-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .company-slogan {
+            font-size: 12px;
+            color: #666;
+            font-style: italic;
         }
 
         .connection-status {
@@ -344,6 +374,14 @@
             .typing-indicator {
                 padding: 0 20px 20px;
             }
+
+            .company-slogan {
+                display: none;
+            }
+
+            .company-info {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -352,6 +390,13 @@
         <div class="chat-container">
             <!-- Status bar -->
             <div class="status-bar">
+                <div class="header-left">
+                    <img src="https://i.ibb.co/HpP19dtk/image.png" alt="DECOFI Logo" class="logo-img">
+                    <div class="company-info">
+                        <div class="company-name">DECOFI Assistant</div>
+                        <div class="company-slogan">Xây dựng chỉ tín - Khẳng định niềm tin</div>
+                    </div>
+                </div>
                 <div class="connection-status">
                     <span class="status-dot offline" id="statusDot"></span>
                     <span id="statusText">Đang kết nối...</span>
