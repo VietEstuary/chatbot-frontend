@@ -24,18 +24,28 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --sidebar-width: 380px;
+            --animation-speed: 0.3s;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f7f7f8;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
         }
 
         .container {
             width: 100%;
-            max-width: 1200px;
+            max-width: 1400px;
             padding: 20px;
             height: 100vh;
             display: flex;
@@ -46,30 +56,36 @@
         .chat-container {
             width: 100%;
             height: 100%;
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.15),
+                0 0 0 1px rgba(255, 255, 255, 0.5) inset;
             display: flex;
             flex-direction: column;
             overflow: hidden;
             position: relative;
+            transition: all var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Sidebar Menu */
+        /* Enhanced Sidebar with ERP */
         .sidebar {
             position: fixed;
             left: 0;
             top: 0;
             height: 100%;
-            width: 260px;
-            background: #ffffff;
-            border-right: 1px solid #e5e5e7;
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
+            border-right: 1px solid rgba(0, 0, 0, 0.08);
             transform: translateX(-100%);
-            transition: transform 0.3s ease;
+            transition: transform var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 10000;
             display: flex;
             flex-direction: column;
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 
+                4px 0 24px rgba(0, 0, 0, 0.12),
+                0 0 0 1px rgba(255, 255, 255, 0.5) inset;
         }
 
         .sidebar.active {
@@ -77,85 +93,397 @@
         }
 
         .sidebar-header {
-            padding: 20px;
-            border-bottom: 1px solid #e5e5e7;
+            padding: 24px;
+            background: var(--primary-gradient);
+            color: white;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(180deg); }
         }
 
         .sidebar-logo {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            z-index: 1;
         }
 
         .sidebar-logo img {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .sidebar-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #333;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .sidebar-subtitle {
+            font-size: 11px;
+            opacity: 0.9;
+            font-weight: 400;
         }
 
         .sidebar-close {
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             border: none;
-            background: transparent;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 6px;
-            transition: background 0.2s;
+            border-radius: 10px;
+            transition: all 0.2s;
+            z-index: 1;
+            font-size: 20px;
         }
 
         .sidebar-close:hover {
-            background: #e5e5e7;
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
         }
 
         .sidebar-nav {
             flex: 1;
             overflow-y: auto;
-            padding: 10px;
+            padding: 20px 16px;
+        }
+
+        .sidebar-nav::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar-nav::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar-nav::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 3px;
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-section-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: #8e8e93;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0 12px;
+            margin-bottom: 8px;
         }
 
         .nav-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
+            gap: 14px;
+            padding: 14px 16px;
             margin-bottom: 4px;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.2s;
-            color: #333;
+            color: #2c3e50;
             text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: var(--primary-gradient);
+            transform: translateX(-100%);
+            transition: transform 0.2s;
         }
 
         .nav-item:hover {
-            background: #e9ecef;
+            background: rgba(102, 126, 234, 0.08);
+            transform: translateX(4px);
+        }
+
+        .nav-item:hover::before {
+            transform: translateX(0);
         }
 
         .nav-item.active {
-            background: #007aff;
+            background: var(--primary-gradient);
             color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
 
         .nav-icon {
-            font-size: 20px;
-            width: 24px;
+            font-size: 22px;
+            width: 28px;
             text-align: center;
         }
 
         .nav-text {
             font-size: 15px;
             font-weight: 500;
+            flex: 1;
+        }
+
+        .nav-badge {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff3b30 100%);
+            color: white;
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-weight: 700;
+            animation: pulse-badge 2s infinite;
+            box-shadow: 0 2px 8px rgba(255, 59, 48, 0.3);
+        }
+
+        @keyframes pulse-badge {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* ERP Panel in Sidebar */
+        .erp-panel {
+            display: none;
+            padding: 20px 16px;
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+            background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .erp-panel.active {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .erp-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .erp-stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            transition: all 0.2s;
+            cursor: pointer;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .erp-stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .erp-stat-label {
+            font-size: 11px;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .erp-stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2d3436;
+            line-height: 1;
+        }
+
+        .erp-stat-change {
+            font-size: 11px;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .erp-stat-change.positive {
+            color: var(--success-color);
+        }
+
+        .erp-stat-change.negative {
+            color: var(--danger-color);
+        }
+
+        .erp-quick-actions {
+            margin-bottom: 20px;
+        }
+
+        .erp-action-btn {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .erp-action-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .erp-action-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .erp-action-btn.primary {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .erp-action-btn.success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .erp-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .erp-requests-list {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .erp-list-header {
+            font-size: 14px;
+            font-weight: 700;
+            color: #2d3436;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .erp-list-badge {
+            background: var(--warning-color);
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .erp-request-item {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .erp-request-item:hover {
+            background: #e9ecef;
+            border-left-color: var(--primary-gradient);
+            transform: translateX(4px);
+        }
+
+        .erp-request-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #2d3436;
+            margin-bottom: 4px;
+        }
+
+        .erp-request-info {
+            font-size: 11px;
+            color: #6c757d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .erp-request-amount {
+            font-weight: 700;
+            color: var(--primary-gradient);
+        }
+
+        .erp-status {
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .erp-status.pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+        }
+
+        .erp-status.approved {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
         }
 
         /* Menu Toggle Button */
@@ -163,32 +491,38 @@
             position: fixed;
             left: 20px;
             top: 20px;
-            width: 44px;
-            height: 44px;
+            width: 48px;
+            height: 48px;
             background: white;
-            border: 1px solid #e5e5e7;
-            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 14px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 
+                0 4px 12px rgba(0, 0, 0, 0.08),
+                0 0 0 1px rgba(255, 255, 255, 0.5) inset;
             transition: all 0.2s;
             z-index: 9999;
             padding: 4px;
         }
 
         .menu-toggle:hover {
-            background: #f7f7f8;
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            transform: scale(1.05) rotate(5deg);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .menu-toggle:active {
+            transform: scale(0.95);
         }
 
         .menu-toggle img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 6px;
+            border-radius: 10px;
         }
 
         /* Overlay */
@@ -198,10 +532,11 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
             opacity: 0;
             visibility: hidden;
-            transition: all 0.3s;
+            transition: all var(--animation-speed);
             z-index: 9998;
         }
 
@@ -210,45 +545,16 @@
             visibility: visible;
         }
 
-        /* Simple header for connection status */
+        /* Enhanced Chat Styles */
         .status-bar {
-            padding: 10px 20px;
-            background: #fafafa;
-            border-bottom: 1px solid #f0f0f0;
+            padding: 16px 24px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(250,250,250,0.9) 100%);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            min-height: 50px;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo-img {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            object-fit: cover;
-        }
-
-        .company-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .company-name {
-            font-size: 16px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .company-slogan {
-            font-size: 12px;
-            color: #666;
-            font-style: italic;
+            min-height: 60px;
         }
 
         .connection-status {
@@ -256,7 +562,10 @@
             color: #8e8e93;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 20px;
         }
 
         .status-dot {
@@ -267,55 +576,44 @@
         }
 
         .status-dot.online {
-            background: #34c759;
+            background: var(--success-color);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
             animation: pulse 2s infinite;
         }
 
         .status-dot.offline {
-            background: #ff3b30;
+            background: var(--danger-color);
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+            0%, 100% { 
+                transform: scale(1);
+                box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+            }
+            50% { 
+                transform: scale(1.2);
+                box-shadow: 0 0 0 6px rgba(16, 185, 129, 0.1);
+            }
         }
 
-        /* Chat messages area */
         .chat-messages {
             flex: 1;
             overflow-y: auto;
-            padding: 25px 40px 20px;
+            padding: 30px 40px;
             scroll-behavior: smooth;
-            background: #fafafa;
+            background: linear-gradient(180deg, #fafafa 0%, #f5f5f5 100%);
         }
 
-        .chat-messages::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .chat-messages::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .chat-messages::-webkit-scrollbar-thumb {
-            background: #ddd;
-            border-radius: 3px;
-        }
-
-        .chat-messages::-webkit-scrollbar-thumb:hover {
-            background: #bbb;
-        }
-
-        /* Messages */
         .message {
-            margin-bottom: 20px;
-            animation: fadeInUp 0.3s ease-out;
+            margin-bottom: 24px;
+            animation: fadeInUp 0.4s ease-out;
         }
 
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: translateY(20px);
             }
             to {
                 opacity: 1;
@@ -329,103 +627,29 @@
 
         .user-message .message-content {
             display: inline-block;
-            background: #007aff;
+            background: var(--primary-gradient);
             color: white;
-            padding: 12px 20px;
-            border-radius: 20px 20px 4px 20px;
+            padding: 14px 20px;
+            border-radius: 24px 24px 4px 24px;
             max-width: 70%;
             word-wrap: break-word;
-        }
-
-        .bot-message {
-            text-align: left;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
         }
 
         .bot-message .message-content {
             display: inline-block;
-            background: #e9ecef;
-            color: #333;
-            padding: 12px 20px;
-            border-radius: 20px 20px 20px 4px;
+            background: white;
+            color: #2c3e50;
+            padding: 14px 20px;
+            border-radius: 24px 24px 24px 4px;
             max-width: 70%;
             word-wrap: break-word;
             white-space: pre-wrap;
             line-height: 1.6;
-            position: relative;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.05);
         }
 
-        /* Typing cursor for streaming */
-        .typing-cursor {
-            display: inline-block;
-            width: 2px;
-            height: 1.2em;
-            background-color: #007aff;
-            animation: blink 1s infinite;
-            margin-left: 2px;
-            vertical-align: text-bottom;
-        }
-
-        @keyframes blink {
-            0%, 49% { opacity: 1; }
-            50%, 100% { opacity: 0; }
-        }
-
-        /* Message formatting */
-        .bot-message .message-content strong {
-            color: #000;
-            font-weight: 600;
-        }
-
-        .bot-message .message-content em {
-            color: #666;
-            font-style: italic;
-        }
-
-        .bot-message .message-content ul,
-        .bot-message .message-content ol {
-            margin: 10px 0;
-            padding-left: 20px;
-        }
-
-        .bot-message .message-content li {
-            margin: 5px 0;
-        }
-
-        .bot-message .message-content code {
-            background: #f4f4f4;
-            padding: 2px 4px;
-            border-radius: 3px;
-            font-family: monospace;
-            font-size: 0.9em;
-        }
-
-        /* Quick actions */
-        .quick-actions {
-            padding: 10px 40px;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            background: white;
-            border-top: 1px solid #f0f0f0;
-        }
-
-        .quick-action {
-            padding: 8px 16px;
-            background: #f0f0f5;
-            border: 1px solid #e5e5e7;
-            border-radius: 20px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .quick-action:hover {
-            background: #007aff;
-            color: white;
-            border-color: #007aff;
-        }
-
-        /* Typing indicator */
         .typing-indicator {
             display: none;
             padding: 0 40px 20px;
@@ -434,76 +658,135 @@
 
         .typing-indicator span {
             display: inline-block;
-            background: #e9ecef;
-            padding: 12px 20px;
-            border-radius: 20px 20px 20px 4px;
+            background: white;
+            padding: 14px 20px;
+            border-radius: 24px 24px 24px 4px;
             color: #8e8e93;
             font-style: italic;
             font-size: 14px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
-        /* Input area */
         .input-area {
-            padding: 20px 40px 30px;
-            background: white;
-            border-top: 1px solid #f0f0f0;
+            padding: 24px 40px 32px;
+            background: linear-gradient(180deg, rgba(250,250,250,0.9) 0%, rgba(255,255,255,0.9) 100%);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(0, 0, 0, 0.06);
         }
 
         .input-group {
             position: relative;
-            background: #f7f7f8;
-            border-radius: 32px;
-            border: 1px solid #e5e5e7;
-            transition: all 0.2s ease;
+            background: white;
+            border-radius: 28px;
+            border: 2px solid rgba(0, 0, 0, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
-            padding: 0 8px 0 24px;
+            padding: 4px 4px 4px 24px;
             min-height: 56px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
 
         .input-group:focus-within {
-            border-color: #007aff;
-            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+            border-color: #667eea;
+            box-shadow: 
+                0 0 0 4px rgba(102, 126, 234, 0.1),
+                0 4px 12px rgba(0, 0, 0, 0.08);
         }
 
         #userInput {
             flex: 1;
             border: none;
             background: transparent;
-            padding: 18px 0;
-            font-size: 17px;
+            padding: 14px 0;
+            font-size: 16px;
             outline: none;
-            color: #1a1a1a;
+            color: #2c3e50;
             line-height: 1.4;
         }
 
-        #userInput::placeholder {
-            color: #8e8e93;
-        }
-
-        .btn-primary {
-            background: #007aff;
+        .btn-send {
+            background: var(--primary-gradient);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 24px;
+            padding: 12px 24px;
+            border-radius: 22px;
             font-size: 15px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
         }
 
-        .btn-primary:hover {
-            background: #0056b3;
+        .btn-send:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
         }
 
-        .btn-primary:disabled {
-            background: #c7c7cc;
+        .btn-send:active {
+            transform: translateY(0);
+        }
+
+        .btn-send:disabled {
+            background: linear-gradient(135deg, #c7c7cc 0%, #a0a0a5 100%);
             cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Modal for ERP details */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            z-index: 11000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
         /* Responsive */
         @media (max-width: 768px) {
+            :root {
+                --sidebar-width: 320px;
+            }
+
             .container {
                 padding: 0;
             }
@@ -517,30 +800,11 @@
             }
             
             .input-area {
-                padding: 15px 20px 20px;
+                padding: 16px 20px 24px;
             }
 
-            .quick-actions {
-                padding: 10px 20px;
-            }
-            
             .message-content {
                 max-width: 85% !important;
-            }
-
-            .typing-indicator {
-                padding: 0 20px 20px;
-            }
-
-            .company-slogan {
-                display: none;
-            }
-
-            .menu-toggle {
-                left: 10px;
-                top: 10px;
-                width: 40px;
-                height: 40px;
             }
         }
     </style>
@@ -551,52 +815,148 @@
         <img src="https://i.ibb.co/HpP19dtk/image.png" alt="DECOFI Menu">
     </button>
 
-    <!-- Sidebar -->
+    <!-- Enhanced Sidebar with ERP -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="sidebar-logo">
                 <img src="https://i.ibb.co/HpP19dtk/image.png" alt="DECOFI">
-                <span class="sidebar-title">DECOFI</span>
+                <div>
+                    <div class="sidebar-title">DECOFI</div>
+                    <div class="sidebar-subtitle">Construction Management</div>
+                </div>
             </div>
             <button class="sidebar-close" onclick="toggleSidebar()">
-                ✕
+                ×
             </button>
         </div>
+        
         <nav class="sidebar-nav">
-            <a href="#" class="nav-item active" onclick="selectNavItem(this, 'dự án')">
-                <span class="nav-icon">📁</span>
-                <span class="nav-text">Dự án</span>
-            </a>
-            <a href="#" class="nav-item" onclick="selectNavItem(this, 'thiết bị')">
-                <span class="nav-icon">🏗️</span>
-                <span class="nav-text">Thiết bị</span>
-            </a>
-            <a href="#" class="nav-item" onclick="selectNavItem(this, 'ngân sách')">
-                <span class="nav-icon">💰</span>
-                <span class="nav-text">Ngân sách</span>
-            </a>
-            <a href="#" class="nav-item" onclick="selectNavItem(this, 'tồn kho')">
-                <span class="nav-icon">📦</span>
-                <span class="nav-text">Tồn kho</span>
-            </a>
-            <a href="#" class="nav-item" onclick="selectNavItem(this, 'blog')">
-                <span class="nav-icon">📝</span>
-                <span class="nav-text">Blog</span>
-            </a>
+            <div class="nav-section">
+                <div class="nav-section-title">Trợ lý AI</div>
+                <a href="#" class="nav-item active" onclick="selectNavItem(this, 'chat')">
+                    <span class="nav-icon">💬</span>
+                    <span class="nav-text">Chat với AI</span>
+                </a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Quản lý</div>
+                <a href="#" class="nav-item" onclick="selectNavItem(this, 'dự án')">
+                    <span class="nav-icon">📁</span>
+                    <span class="nav-text">Dự án</span>
+                </a>
+                <a href="#" class="nav-item" onclick="selectNavItem(this, 'thiết bị')">
+                    <span class="nav-icon">🏗️</span>
+                    <span class="nav-text">Thiết bị</span>
+                </a>
+                <a href="#" class="nav-item" onclick="toggleERPPanel(this)">
+                    <span class="nav-icon">💰</span>
+                    <span class="nav-text">Ngân sách ERP</span>
+                    <span class="nav-badge">3</span>
+                </a>
+                <a href="#" class="nav-item" onclick="selectNavItem(this, 'tồn kho')">
+                    <span class="nav-icon">📦</span>
+                    <span class="nav-text">Tồn kho</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Thông tin</div>
+                <a href="#" class="nav-item" onclick="selectNavItem(this, 'báo cáo')">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">Báo cáo</span>
+                </a>
+                <a href="#" class="nav-item" onclick="selectNavItem(this, 'blog')">
+                    <span class="nav-icon">📝</span>
+                    <span class="nav-text">Blog & Tin tức</span>
+                </a>
+            </div>
         </nav>
+
+        <!-- ERP Panel -->
+        <div class="erp-panel" id="erpPanel">
+            <div class="erp-stats">
+                <div class="erp-stat-card" onclick="showERPDetail('budget')">
+                    <div class="erp-stat-label">Tổng ngân sách</div>
+                    <div class="erp-stat-value">₫5.2 tỷ</div>
+                    <div class="erp-stat-change positive">
+                        <span>↑</span> +12% tháng này
+                    </div>
+                </div>
+                <div class="erp-stat-card" onclick="showERPDetail('spent')">
+                    <div class="erp-stat-label">Đã chi tiêu</div>
+                    <div class="erp-stat-value">₫3.8 tỷ</div>
+                    <div class="erp-stat-change negative">
+                        <span>⚠</span> 73% sử dụng
+                    </div>
+                </div>
+                <div class="erp-stat-card" onclick="showERPDetail('pending')">
+                    <div class="erp-stat-label">Chờ duyệt</div>
+                    <div class="erp-stat-value">12</div>
+                    <div class="erp-stat-change">
+                        <span>💰</span> ₫450 triệu
+                    </div>
+                </div>
+                <div class="erp-stat-card" onclick="showERPDetail('projects')">
+                    <div class="erp-stat-label">Dự án</div>
+                    <div class="erp-stat-value">4</div>
+                    <div class="erp-stat-change positive">
+                        <span>✓</span> 2 hoàn thành
+                    </div>
+                </div>
+            </div>
+
+            <div class="erp-quick-actions">
+                <button class="erp-action-btn primary" onclick="createBudgetRequest()">
+                    <span>➕</span> Tạo yêu cầu ngân sách
+                </button>
+                <button class="erp-action-btn success" onclick="viewApprovals()">
+                    <span>✅</span> Phê duyệt nhanh
+                </button>
+            </div>
+
+            <div class="erp-requests-list">
+                <div class="erp-list-header">
+                    <span>Yêu cầu gần đây</span>
+                    <span class="erp-list-badge">3 mới</span>
+                </div>
+                <div class="erp-request-item" onclick="viewRequestDetail('YC2024001')">
+                    <div class="erp-request-title">Vật liệu xây dựng T12</div>
+                    <div class="erp-request-info">
+                        <span>CT Hà Nội</span>
+                        <span class="erp-request-amount">₫280tr</span>
+                    </div>
+                    <span class="erp-status pending">Chờ duyệt</span>
+                </div>
+                <div class="erp-request-item" onclick="viewRequestDetail('YC2024002')">
+                    <div class="erp-request-title">Chi phí nhân công</div>
+                    <div class="erp-request-info">
+                        <span>CT HCM</span>
+                        <span class="erp-request-amount">₫150tr</span>
+                    </div>
+                    <span class="erp-status approved">Đã duyệt</span>
+                </div>
+                <div class="erp-request-item" onclick="viewRequestDetail('YC2024003')">
+                    <div class="erp-request-title">Thuê thiết bị</div>
+                    <div class="erp-request-info">
+                        <span>CT Đà Nẵng</span>
+                        <span class="erp-request-amount">₫95tr</span>
+                    </div>
+                    <span class="erp-status pending">Chờ duyệt</span>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Sidebar Overlay -->
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
+    <!-- Main Chat Container -->
     <div class="container">
-        <div class="chat-container">
-            <!-- Status bar -->
+        <div class="chat-container" id="chatContainer">
             <div class="status-bar">
                 <div class="header-left">
-                   <!-- <img src="https://i.ibb.co/HpP19dtk/image.png" alt="DECOFI Logo" class="logo-img"> -->
                     <div class="company-info">
-                      <!--  <div class="company-name">DECOFI Assistant</div>-->
                         <div class="company-slogan">Xây dựng chỉ tín - Khẳng định niềm tin</div>
                     </div>
                 </div>
@@ -606,30 +966,34 @@
                 </div>
             </div>
             
-            <!-- Chat messages -->
-            <div class="chat-messages" id="chatMessages">
-                <!-- Messages will be added here -->
-            </div>
+            <div class="chat-messages" id="chatMessages"></div>
             
-            
-            
-            <!-- Typing indicator -->
             <div class="typing-indicator" id="typingIndicator">
                 <span>PTB đang soạn tin...</span>
             </div>
             
-            <!-- Input area -->
             <div class="input-area">
                 <div class="input-group">
                     <input type="text" 
                            id="userInput" 
-                           placeholder="Hỏi bất kỳ điều gì..."
+                           placeholder="Hỏi bất kỳ điều gì về thiết bị, ngân sách, dự án..."
                            onkeypress="if(event.key==='Enter' && !event.shiftKey) sendMessage()">
-                    <button class="btn-primary" id="sendButton" onclick="sendMessage()">
+                    <button class="btn-send" id="sendButton" onclick="sendMessage()">
                         Gửi
                     </button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal for ERP Details -->
+    <div class="modal" id="erpModal">
+        <div class="modal-content">
+            <h2 id="modalTitle">Chi tiết yêu cầu</h2>
+            <div id="modalBody">
+                <!-- Content will be inserted here -->
+            </div>
+            <button class="erp-action-btn primary" onclick="closeModal()">Đóng</button>
         </div>
     </div>
 
@@ -643,6 +1007,7 @@
         let isFirstLoad = true;
         let currentEventSource = null;
         let typingTimeout = null;
+        let erpPanelOpen = false;
 
         // Format message content with proper HTML
         function formatMessageContent(content) {
@@ -755,15 +1120,17 @@
         }
 
         // Show initial greeting
-        /**
-         * Hiển thị lời chào ban đầu khi người dùng bắt đầu cuộc trò chuyện.
-         * Tin nhắn này giới thiệu về trợ lý ảo và gợi ý các câu hỏi mẫu.
-         */
         function showInitialGreeting() {
-            // Nội dung tin nhắn chào mừng sử dụng cú pháp Markdown để định dạng
-            const greetingMessage = `📦Xin chào! Tôi là trợ lý ảo phòng thiết bị DECOFI, tôi đã sẵn sàng hổ trợ bạn!`;
+            const greetingMessage = `🎯 **Xin chào! Tôi là trợ lý DECOFI Assistant**
 
-            // Gọi hàm để hiển thị tin nhắn trong giao diện chat
+Tôi có thể hỗ trợ bạn:
+• 🏗️ **Thiết bị công trường** - Tra cứu, đặt hàng, báo giá
+• 💰 **Ngân sách ERP** - Quản lý chi phí, phê duyệt ngân sách
+• 📦 **Tồn kho** - Kiểm tra vật tư, thiết bị sẵn có
+• 📁 **Dự án** - Theo dõi tiến độ, báo cáo
+
+💡 *Nhấn menu ☰ để xem thêm chức năng ERP ngân sách!*`;
+
             addMessage(greetingMessage);
         }
 
@@ -780,36 +1147,58 @@
             
             if (!message) return;
 
-            // Add user message
+            // Check for budget-related keywords
+            if (message.toLowerCase().includes('ngân sách') || 
+                message.toLowerCase().includes('chi phí') ||
+                message.toLowerCase().includes('phê duyệt') ||
+                message.toLowerCase().includes('yêu cầu')) {
+                
+                // Add user message
+                addMessage(message, true);
+                
+                // Clear input
+                input.value = '';
+                
+                // Show bot response with ERP integration
+                setTimeout(() => {
+                    addMessage(`📊 **Tôi đã tìm thấy thông tin liên quan đến ngân sách:**
+
+• **Tổng ngân sách:** ₫5.2 tỷ (+12% so với tháng trước)
+• **Đã chi tiêu:** ₫3.8 tỷ (73% ngân sách)
+• **Chờ duyệt:** 12 yêu cầu (₫450 triệu)
+• **Dự án đang thực hiện:** 4 dự án
+
+💡 *Mở menu ☰ > Ngân sách ERP để xem chi tiết và tạo yêu cầu mới!*
+
+Bạn muốn tôi hỗ trợ gì thêm về ngân sách?`);
+                }, 1000);
+                
+                return;
+            }
+
+            // Normal chat flow
             addMessage(message, true);
-            
-            // Clear input and disable
             input.value = '';
             input.disabled = true;
             sendButton.disabled = true;
             
-            // Show typing indicator
             const typingIndicator = document.getElementById('typingIndicator');
             typingIndicator.style.display = 'block';
 
-            // Add delay before streaming (1.5 seconds)
             await new Promise(resolve => {
                 typingTimeout = setTimeout(resolve, 1000);
             });
 
             try {
-                // Always use streaming
                 await sendStreamingMessage(message);
             } catch (error) {
                 console.error('Chat error:', error);
                 addMessage(`❌ **Lỗi:** ${error.message}\n\n*Vui lòng thử lại sau.*`);
             } finally {
-                // Clear timeout if exists
                 if (typingTimeout) {
                     clearTimeout(typingTimeout);
                     typingTimeout = null;
                 }
-                // Hide typing only if not streaming (error case)
                 if (!currentEventSource) {
                     typingIndicator.style.display = 'none';
                 }
@@ -821,25 +1210,20 @@
 
         // Send streaming message
         async function sendStreamingMessage(message) {
-            // Close any existing EventSource
             if (currentEventSource) {
                 currentEventSource.close();
             }
 
-            // Create unique message ID for streaming
             const messageId = 'stream-' + Date.now();
             let fullResponse = '';
             let firstChunkReceived = false;
 
-            // Create EventSource for streaming
             currentEventSource = new EventSource(
                 `${BACKEND_URL}/api/chat/stream?question=${encodeURIComponent(message)}`
             );
 
-            // Handle incoming chunks
             currentEventSource.onmessage = (event) => {
                 try {
-                    // Hide typing indicator when first chunk arrives
                     if (!firstChunkReceived) {
                         document.getElementById('typingIndicator').style.display = 'none';
                         firstChunkReceived = true;
@@ -848,7 +1232,6 @@
                     const data = JSON.parse(event.data);
                     fullResponse += data.chunk;
                     
-                    // Update message with typing effect
                     addStreamingMessage(fullResponse, messageId, data.isComplete);
                     
                 } catch (error) {
@@ -856,33 +1239,23 @@
                 }
             };
 
-            // Handle completion
             currentEventSource.addEventListener('complete', (event) => {
                 currentEventSource.close();
                 currentEventSource = null;
-                
-                // Remove typing cursor
                 addStreamingMessage(fullResponse, messageId, true);
-                
-                console.log('Streaming completed');
             });
 
-            // Handle errors
             currentEventSource.onerror = (error) => {
                 console.error('Streaming error:', error);
                 currentEventSource.close();
                 currentEventSource = null;
-                
-                // Hide typing indicator on error
                 document.getElementById('typingIndicator').style.display = 'none';
                 
-                // If no response received, fall back to normal API
                 if (!fullResponse) {
                     sendNormalMessage(message).catch(err => {
                         addMessage(`❌ **Lỗi streaming:** Không thể nhận phản hồi từ server.`);
                     });
                 } else {
-                    // Just remove cursor if we have partial response
                     addStreamingMessage(fullResponse, messageId, true);
                 }
             };
@@ -911,33 +1284,155 @@
             }
         }
 
-        // Send quick action message
-        function sendQuickMessage(message) {
-            document.getElementById('userInput').value = message;
-            sendMessage();
+        // Sidebar functions
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
         }
 
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            // Ctrl/Cmd + Enter to send
-            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-                sendMessage();
+        function selectNavItem(element, section) {
+            // Don't remove active class if it's the ERP item
+            if (!element.textContent.includes('Ngân sách ERP')) {
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    if (!item.textContent.includes('Ngân sách ERP')) {
+                        item.classList.remove('active');
+                    }
+                });
+                element.classList.add('active');
             }
             
-            // ESC to clear input
-            if (e.key === 'Escape') {
-                document.getElementById('userInput').value = '';
+            addMessage(`📌 Bạn đã chọn mục: **${section}**\n\nTính năng này đang được phát triển và sẽ sớm được cập nhật!`);
+        }
+
+        // Toggle ERP Panel
+        function toggleERPPanel(element) {
+            const erpPanel = document.getElementById('erpPanel');
+            erpPanelOpen = !erpPanelOpen;
+            
+            if (erpPanelOpen) {
+                element.classList.add('active');
+                erpPanel.classList.add('active');
+                // Update badge
+                setTimeout(() => {
+                    const badge = element.querySelector('.nav-badge');
+                    if (badge) badge.style.display = 'none';
+                }, 1000);
+            } else {
+                element.classList.remove('active');
+                erpPanel.classList.remove('active');
             }
-        });
+        }
+
+        // ERP Functions
+        function showERPDetail(type) {
+            const modal = document.getElementById('erpModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+            
+            switch(type) {
+                case 'budget':
+                    modalTitle.textContent = '📊 Chi tiết Ngân sách';
+                    modalBody.innerHTML = `
+                        <p><strong>Tổng ngân sách năm 2024:</strong> ₫5.2 tỷ</p>
+                        <p><strong>Q1:</strong> ₫1.3 tỷ (100% sử dụng)</p>
+                        <p><strong>Q2:</strong> ₫1.3 tỷ (100% sử dụng)</p>
+                        <p><strong>Q3:</strong> ₫1.3 tỷ (92% sử dụng)</p>
+                        <p><strong>Q4:</strong> ₫1.3 tỷ (73% sử dụng)</p>
+                        <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
+                        <p><strong>Dự báo:</strong> Cần bổ sung ₫800 triệu cho Q4</p>
+                    `;
+                    break;
+                case 'spent':
+                    modalTitle.textContent = '💸 Chi tiêu chi tiết';
+                    modalBody.innerHTML = `
+                        <p><strong>Vật liệu xây dựng:</strong> ₫2.1 tỷ</p>
+                        <p><strong>Nhân công:</strong> ₫1.2 tỷ</p>
+                        <p><strong>Thiết bị:</strong> ₫350 triệu</p>
+                        <p><strong>Vận chuyển:</strong> ₫150 triệu</p>
+                        <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
+                        <p><strong>Tổng:</strong> ₫3.8 tỷ / ₫5.2 tỷ</p>
+                    `;
+                    break;
+                case 'pending':
+                    modalTitle.textContent = '⏳ Yêu cầu chờ duyệt';
+                    modalBody.innerHTML = `
+                        <p><strong>Tổng số:</strong> 12 yêu cầu</p>
+                        <p><strong>Giá trị:</strong> ₫450 triệu</p>
+                        <p><strong>Ưu tiên cao:</strong> 3 yêu cầu</p>
+                        <p><strong>Cần duyệt gấp:</strong> YC2024001, YC2024003</p>
+                    `;
+                    break;
+                case 'projects':
+                    modalTitle.textContent = '🏗️ Dự án đang thực hiện';
+                    modalBody.innerHTML = `
+                        <p><strong>CT Hà Nội - Tower A:</strong> 75% hoàn thành</p>
+                        <p><strong>CT HCM - Mall:</strong> 45% hoàn thành</p>
+                        <p><strong>CT Đà Nẵng - Resort:</strong> 60% hoàn thành</p>
+                        <p><strong>CT Cần Thơ:</strong> 30% hoàn thành</p>
+                    `;
+                    break;
+            }
+            
+            modal.classList.add('active');
+        }
+
+        function viewRequestDetail(requestId) {
+            const modal = document.getElementById('erpModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+            
+            modalTitle.textContent = `📋 Chi tiết yêu cầu ${requestId}`;
+            modalBody.innerHTML = `
+                <p><strong>Mã yêu cầu:</strong> ${requestId}</p>
+                <p><strong>Người tạo:</strong> Nguyễn Văn A</p>
+                <p><strong>Ngày tạo:</strong> 15/12/2024</p>
+                <p><strong>Công trường:</strong> CT Hà Nội - Tower A</p>
+                <p><strong>Số tiền:</strong> ₫280,000,000</p>
+                <p><strong>Mục đích:</strong> Mua vật liệu xây dựng cho tháng 12</p>
+                <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
+                <button class="erp-action-btn success" style="width: 100%; margin-bottom: 10px;">✅ Phê duyệt</button>
+                <button class="erp-action-btn" style="width: 100%; background: #ef4444; color: white;">❌ Từ chối</button>
+            `;
+            
+            modal.classList.add('active');
+        }
+
+        function createBudgetRequest() {
+            toggleSidebar();
+            addMessage(`📝 **Tạo yêu cầu ngân sách mới**
+
+Vui lòng cung cấp thông tin sau:
+• Công trường/Dự án
+• Loại chi phí (Vật liệu/Nhân công/Thiết bị)
+• Số tiền yêu cầu
+• Mục đích sử dụng
+
+*Ví dụ: "Tôi cần tạo yêu cầu 300 triệu cho vật liệu xây dựng CT Hà Nội"*`);
+        }
+
+        function viewApprovals() {
+            toggleSidebar();
+            addMessage(`✅ **Danh sách phê duyệt nhanh**
+
+**Cần duyệt gấp (3):**
+1. YC2024001 - Vật liệu T12 - ₫280tr ⚠️
+2. YC2024003 - Thuê thiết bị - ₫95tr
+3. YC2024004 - Xi măng - ₫75tr
+
+*Gõ "duyệt YC2024001" để phê duyệt nhanh*`);
+        }
+
+        function closeModal() {
+            document.getElementById('erpModal').classList.remove('active');
+        }
 
         // Initialize on load
         window.addEventListener('load', async () => {
             await checkBackendHealth();
-            
-            // Set up periodic health checks
             setInterval(checkBackendHealth, 30000);
-            
-            // Focus input
             document.getElementById('userInput').focus();
         });
 
@@ -951,40 +1446,12 @@
             }
         });
 
-        // Debug functions
-        window.debug = {
-            testConnection: checkBackendHealth,
-            backend: BACKEND_URL,
-            sendTest: () => sendQuickMessage('test'),
-            testStream: () => sendQuickMessage('tồn kho xi măng')
-        };
-
-        // Sidebar functions
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
-        }
-
-        function selectNavItem(element, section) {
-            // Remove active class from all items
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            // Add active class to clicked item
-            element.classList.add('active');
-            
-            // Close sidebar
-            toggleSidebar();
-            
-            // Here you can add logic to handle section changes
-            console.log('Selected section:', section);
-            
-            // Optional: Show a message in chat
-            addMessage(`Bạn đã chọn mục: **${section}**. Tính năng này sẽ được cập nhật sau.`);
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('erpModal');
+            if (event.target === modal) {
+                modal.classList.remove('active');
+            }
         }
     </script>
 </body>
