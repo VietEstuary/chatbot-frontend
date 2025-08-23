@@ -43,11 +43,11 @@
             z-index: 1;
         }
 
-        /* Desktop layout adjustment */
+        /* Desktop layout - Add space for sidebar */
         @media (min-width: 769px) {
             .container {
                 max-width: 100%;
-                padding-left: 280px; /* Space for sidebar */
+                padding-left: 280px;
             }
         }
 
@@ -80,7 +80,7 @@
             box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        /* Desktop: Always show sidebar */
+        /* Desktop - Always show sidebar */
         @media (min-width: 769px) {
             .sidebar {
                 transform: translateX(0);
@@ -539,11 +539,11 @@
             cursor: not-allowed;
         }
 
-        /* Mobile Responsive */
+        /* Responsive */
         @media (max-width: 768px) {
             .container {
                 padding: 0;
-                padding-left: 0; /* Reset desktop padding */
+                padding-left: 0;
             }
 
             .chat-container {
@@ -581,26 +581,10 @@
                 height: 40px;
             }
         }
-
-        /* Tablet Responsive */
-        @media (min-width: 769px) and (max-width: 1024px) {
-            .container {
-                padding-left: 280px;
-                padding-right: 20px;
-            }
-        }
-
-        /* Large Desktop */
-        @media (min-width: 1025px) {
-            .container {
-                padding-left: 290px;
-                padding-right: 40px;
-            }
-        }
     </style>
 </head>
 <body>
-    <!-- Menu Toggle Button (Only visible on mobile) -->
+    <!-- Menu Toggle Button -->
     <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
         <img src="https://i.ibb.co/HpP19dtk/image.png" alt="DECOFI Menu">
     </button>
@@ -640,7 +624,7 @@
         </nav>
     </div>
 
-    <!-- Sidebar Overlay (Only visible on mobile) -->
+    <!-- Sidebar Overlay -->
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
     <div class="container">
@@ -648,7 +632,9 @@
             <!-- Status bar -->
             <div class="status-bar">
                 <div class="header-left">
+                   <!-- <img src="https://i.ibb.co/HpP19dtk/image.png" alt="DECOFI Logo" class="logo-img"> -->
                     <div class="company-info">
+                      <!--  <div class="company-name">DECOFI Assistant</div>-->
                         <div class="company-slogan">Xây dựng chỉ tín - Khẳng định niềm tin</div>
                     </div>
                 </div>
@@ -662,6 +648,8 @@
             <div class="chat-messages" id="chatMessages">
                 <!-- Messages will be added here -->
             </div>
+            
+            
             
             <!-- Typing indicator -->
             <div class="typing-indicator" id="typingIndicator">
@@ -810,8 +798,15 @@
         }
 
         // Show initial greeting
+        /**
+         * Hiển thị lời chào ban đầu khi người dùng bắt đầu cuộc trò chuyện.
+         * Tin nhắn này giới thiệu về trợ lý ảo và gợi ý các câu hỏi mẫu.
+         */
         function showInitialGreeting() {
+            // Nội dung tin nhắn chào mừng sử dụng cú pháp Markdown để định dạng
             const greetingMessage = `📦Xin chào! Tôi là trợ lý ảo phòng thiết bị DECOFI, tôi đã sẵn sàng hổ trợ bạn!`;
+
+            // Gọi hàm để hiển thị tin nhắn trong giao diện chat
             addMessage(greetingMessage);
         }
 
