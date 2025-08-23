@@ -43,6 +43,14 @@
             z-index: 1;
         }
 
+        /* Desktop layout adjustment */
+        @media (min-width: 769px) {
+            .container {
+                max-width: 100%;
+                padding-left: 280px; /* Space for sidebar */
+            }
+        }
+
         .chat-container {
             width: 100%;
             height: 100%;
@@ -70,6 +78,14 @@
             display: flex;
             flex-direction: column;
             box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Desktop: Always show sidebar */
+        @media (min-width: 769px) {
+            .sidebar {
+                transform: translateX(0);
+                box-shadow: none;
+            }
         }
 
         .sidebar.active {
@@ -113,6 +129,13 @@
             justify-content: center;
             border-radius: 6px;
             transition: background 0.2s;
+        }
+
+        /* Hide close button on desktop */
+        @media (min-width: 769px) {
+            .sidebar-close {
+                display: none;
+            }
         }
 
         .sidebar-close:hover {
@@ -178,6 +201,13 @@
             padding: 4px;
         }
 
+        /* Hide menu button on desktop */
+        @media (min-width: 769px) {
+            .menu-toggle {
+                display: none;
+            }
+        }
+
         .menu-toggle:hover {
             background: #f7f7f8;
             transform: scale(1.05);
@@ -203,6 +233,13 @@
             visibility: hidden;
             transition: all 0.3s;
             z-index: 9998;
+        }
+
+        /* Hide overlay on desktop */
+        @media (min-width: 769px) {
+            .sidebar-overlay {
+                display: none;
+            }
         }
 
         .sidebar-overlay.active {
@@ -502,10 +539,11 @@
             cursor: not-allowed;
         }
 
-        /* Responsive */
+        /* Mobile Responsive */
         @media (max-width: 768px) {
             .container {
                 padding: 0;
+                padding-left: 0; /* Reset desktop padding */
             }
 
             .chat-container {
@@ -543,10 +581,26 @@
                 height: 40px;
             }
         }
+
+        /* Tablet Responsive */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .container {
+                padding-left: 280px;
+                padding-right: 20px;
+            }
+        }
+
+        /* Large Desktop */
+        @media (min-width: 1025px) {
+            .container {
+                padding-left: 290px;
+                padding-right: 40px;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- Menu Toggle Button -->
+    <!-- Menu Toggle Button (Only visible on mobile) -->
     <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
         <img src="https://i.ibb.co/HpP19dtk/image.png" alt="DECOFI Menu">
     </button>
@@ -586,7 +640,7 @@
         </nav>
     </div>
 
-    <!-- Sidebar Overlay -->
+    <!-- Sidebar Overlay (Only visible on mobile) -->
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
     <div class="container">
@@ -594,9 +648,7 @@
             <!-- Status bar -->
             <div class="status-bar">
                 <div class="header-left">
-                   <!-- <img src="https://i.ibb.co/HpP19dtk/image.png" alt="DECOFI Logo" class="logo-img"> -->
                     <div class="company-info">
-                      <!--  <div class="company-name">DECOFI Assistant</div>-->
                         <div class="company-slogan">Xây dựng chỉ tín - Khẳng định niềm tin</div>
                     </div>
                 </div>
@@ -610,8 +662,6 @@
             <div class="chat-messages" id="chatMessages">
                 <!-- Messages will be added here -->
             </div>
-            
-            
             
             <!-- Typing indicator -->
             <div class="typing-indicator" id="typingIndicator">
@@ -643,6 +693,11 @@
         let isFirstLoad = true;
         let currentEventSource = null;
         let typingTimeout = null;
+
+        // Check if device is mobile
+        function isMobileDevice() {
+            return window.innerWidth <= 768;
+        }
 
         // Format message content with proper HTML
         function formatMessageContent(content) {
@@ -755,15 +810,8 @@
         }
 
         // Show initial greeting
-        /**
-         * Hiển thị lời chào ban đầu khi người dùng bắt đầu cuộc trò chuyện.
-         * Tin nhắn này giới thiệu về trợ lý ảo và gợi ý các câu hỏi mẫu.
-         */
         function showInitialGreeting() {
-            // Nội dung tin nhắn chào mừng sử dụng cú pháp Markdown để định dạng
             const greetingMessage = `📦Xin chào! Tôi là trợ lý ảo phòng thiết bị DECOFI, tôi đã sẵn sàng hổ trợ bạn!`;
-
-            // Gọi hàm để hiển thị tin nhắn trong giao diện chat
             addMessage(greetingMessage);
         }
 
@@ -930,12 +978,63 @@
             }
         });
 
+        // Sidebar functions
+        function toggleSidebar() {
+            // Only toggle on mobile devices
+            if (isMobileDevice()) {
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('sidebarOverlay');
+                
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            }
+        }
+
+        function selectNavItem(element, section) {
+            // Remove active class from all items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Add active class to clicked item
+            element.classList.add('active');
+            
+            // Close sidebar only on mobile
+            if (isMobileDevice()) {
+                toggleSidebar();
+            }
+            
+            // Here you can add logic to handle section changes
+            console.log('Selected section:', section);
+            
+            // Optional: Show a message in chat
+            addMessage(`Bạn đã chọn mục: **${section}**. Tính năng này sẽ được cập nhật sau.`);
+        }
+
+        // Handle window resize
+        function handleResize() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            if (!isMobileDevice()) {
+                // Desktop: ensure sidebar is visible and overlay is hidden
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+            }
+        }
+
         // Initialize on load
         window.addEventListener('load', async () => {
             await checkBackendHealth();
             
             // Set up periodic health checks
             setInterval(checkBackendHealth, 30000);
+            
+            // Handle resize events
+            window.addEventListener('resize', handleResize);
+            
+            // Initial resize check
+            handleResize();
             
             // Focus input
             document.getElementById('userInput').focus();
@@ -956,36 +1055,6 @@
             testConnection: checkBackendHealth,
             backend: BACKEND_URL,
             sendTest: () => sendQuickMessage('test'),
-            testStream: () => sendQuickMessage('tồn kho xi măng')
+            testStream: () => sendQuickMessage('tồn kho xi măng'),
+            checkDevice: () => console.log('Is mobile:', isMobileDevice())
         };
-
-        // Sidebar functions
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
-        }
-
-        function selectNavItem(element, section) {
-            // Remove active class from all items
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            // Add active class to clicked item
-            element.classList.add('active');
-            
-            // Close sidebar
-            toggleSidebar();
-            
-            // Here you can add logic to handle section changes
-            console.log('Selected section:', section);
-            
-            // Optional: Show a message in chat
-            addMessage(`Bạn đã chọn mục: **${section}**. Tính năng này sẽ được cập nhật sau.`);
-        }
-    </script>
-</body>
-</html>
