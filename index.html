@@ -973,6 +973,41 @@
             }
         });
 
+        // Initialize on load
+        window.addEventListener('load', async () => {
+            await checkBackendHealth();
+            
+            // Set up periodic health checks
+            setInterval(checkBackendHealth, 30000);
+            
+            // Handle resize events
+            window.addEventListener('resize', handleResize);
+            
+            // Initial resize check
+            handleResize();
+            
+            // Focus input
+            document.getElementById('userInput').focus();
+        });
+
+        // Clean up EventSource on page unload
+        window.addEventListener('beforeunload', () => {
+            if (currentEventSource) {
+                currentEventSource.close();
+            }
+            if (typingTimeout) {
+                clearTimeout(typingTimeout);
+            }
+        });
+
+        // Debug functions
+        window.debug = {
+            testConnection: checkBackendHealth,
+            backend: BACKEND_URL,
+            sendTest: () => sendQuickMessage('test'),
+            testStream: () => sendQuickMessage('tồn kho xi măng')
+        };
+
         // Sidebar functions
         function toggleSidebar() {
             // Only toggle on mobile devices
@@ -1017,39 +1052,3 @@
                 overlay.classList.remove('active');
             }
         }
-
-        // Initialize on load
-        window.addEventListener('load', async () => {
-            await checkBackendHealth();
-            
-            // Set up periodic health checks
-            setInterval(checkBackendHealth, 30000);
-            
-            // Handle resize events
-            window.addEventListener('resize', handleResize);
-            
-            // Initial resize check
-            handleResize();
-            
-            // Focus input
-            document.getElementById('userInput').focus();
-        });
-
-        // Clean up EventSource on page unload
-        window.addEventListener('beforeunload', () => {
-            if (currentEventSource) {
-                currentEventSource.close();
-            }
-            if (typingTimeout) {
-                clearTimeout(typingTimeout);
-            }
-        });
-
-        // Debug functions
-        window.debug = {
-            testConnection: checkBackendHealth,
-            backend: BACKEND_URL,
-            sendTest: () => sendQuickMessage('test'),
-            testStream: () => sendQuickMessage('tồn kho xi măng'),
-            checkDevice: () => console.log('Is mobile:', isMobileDevice())
-        };
