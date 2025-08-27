@@ -933,12 +933,33 @@
         // Initialize on load
         window.addEventListener('load', async () => {
             await checkBackendHealth();
-            
+
             // Set up periodic health checks
             setInterval(checkBackendHealth, 30000);
-            
+
             // Focus input
             document.getElementById('userInput').focus();
+
+            // Show sidebar by default on desktop, keep hidden on mobile
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const applySidebarState = () => {
+                if (window.innerWidth >= 768) {
+                    sidebar.classList.add('active');
+                    overlay.classList.remove('active');
+                } else {
+                    sidebar.classList.remove('active');
+                    overlay.classList.remove('active');
+                }
+            };
+
+            // Apply initial state
+            applySidebarState();
+
+            // Update on resize (useful when user resizes desktop window)
+            window.addEventListener('resize', () => {
+                applySidebarState();
+            });
         });
 
         // Clean up EventSource on page unload
