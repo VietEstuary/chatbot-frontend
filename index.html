@@ -543,35 +543,6 @@
                 height: 40px;
             }
         }
-
-        /* --- BEGIN: desktop sidebar layout fix --- */
-        @media (min-width: 768px) {
-            /* ensure container and body behave for a visible sidebar */
-            body.sidebar-open {
-                justify-content: flex-start; /* align container from left when sidebar open */
-            }
-
-            .container {
-                transition: margin-left 0.28s ease, max-width 0.28s ease;
-            }
-
-            /* when sidebar is visible, push container to the right */
-            body.sidebar-open .container {
-                margin-left: 260px; /* match .sidebar width */
-                max-width: calc(100% - 260px);
-            }
-
-            /* hide overlay on desktop */
-            .sidebar-overlay {
-                display: none;
-            }
-
-            /* shift menu-toggle to avoid overlap */
-            body.sidebar-open .menu-toggle {
-                left: 280px;
-            }
-        }
-        /* --- END --- */
     </style>
 </head>
 <body>
@@ -976,11 +947,9 @@
                 if (window.innerWidth >= 768) {
                     sidebar.classList.add('active');
                     overlay.classList.remove('active');
-                    document.body.classList.add('sidebar-open'); // <-- add body class
                 } else {
                     sidebar.classList.remove('active');
                     overlay.classList.remove('active');
-                    document.body.classList.remove('sidebar-open'); // <-- remove body class
                 }
             };
 
@@ -1018,13 +987,6 @@
             
             sidebar.classList.toggle('active');
             overlay.classList.toggle('active');
-
-            // keep body class in sync so desktop layout shifts correctly
-            if (sidebar.classList.contains('active') && window.innerWidth >= 768) {
-                document.body.classList.add('sidebar-open');
-            } else {
-                document.body.classList.remove('sidebar-open');
-            }
         }
 
         function selectNavItem(element, section) {
