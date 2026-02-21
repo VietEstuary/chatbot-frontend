@@ -20,9 +20,9 @@
 
         :root {
             --sidebar-w: 256px;
-            --sidebar-bg: #1a1a1a;
-            --sidebar-hover: rgba(255,255,255,0.06);
-            --sidebar-active: rgba(255,255,255,0.1);
+            --sidebar-bg: #0f4c81;
+            --sidebar-hover: rgba(255,255,255,0.09);
+            --sidebar-active: rgba(255,255,255,0.16);
             --sidebar-text: #e5e5e5;
             --sidebar-muted: #888;
             --accent: #cf8c4a;
@@ -475,6 +475,7 @@
             background: rgba(0,0,0,0.45);
             z-index: 150;
             opacity: 0;
+            pointer-events: none;
             transition: opacity 0.28s;
         }
         .overlay.show { opacity: 1; pointer-events: auto; }
