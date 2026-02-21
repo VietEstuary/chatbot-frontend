@@ -4,1009 +4,846 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PTB DECOFI Assistant</title>
-    
-    <!-- Favicon - Logo hiển thị trên tab -->
+
     <link rel="icon" type="image/png" href="https://i.ibb.co/HpP19dtk/image.png">
     <link rel="shortcut icon" type="image/png" href="https://i.ibb.co/HpP19dtk/image.png">
-    
-    <!-- Apple Touch Icon cho iOS -->
     <link rel="apple-touch-icon" href="https://i.ibb.co/HpP19dtk/image.png">
-    
-    <!-- Meta tags cho social sharing -->
+
     <meta property="og:title" content="PTB DECOFI Assistant">
-    <meta property="og:description" content="Trợ lý ảo phòng thiết bị DECOFI - Những điều bạn cần biết về thiết bị các công trình">
+    <meta property="og:description" content="Trợ lý ảo phòng thiết bị DECOFI">
     <meta property="og:image" content="https://i.ibb.co/HpP19dtk/image.png">
-    
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        *, *::before, *::after {
+            margin: 0; padding: 0; box-sizing: border-box;
         }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f7f7f8;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        :root {
+            --sidebar-w: 256px;
+            --sidebar-bg: #1a1a1a;
+            --sidebar-hover: rgba(255,255,255,0.06);
+            --sidebar-active: rgba(255,255,255,0.1);
+            --sidebar-text: #e5e5e5;
+            --sidebar-muted: #888;
+            --accent: #cf8c4a;
+            --main-bg: #fff;
+            --msg-bg: #f4f4f4;
+            --input-bg: #f4f4f4;
+            --border: #e5e5e5;
+            --text: #1a1a1a;
+            --text-muted: #666;
         }
 
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            padding: 20px;
-            height: 100vh;
-            display: flex;
-            position: relative;
-            z-index: 1;
-        }
-
-        .chat-container {
-            width: 100%;
+        html, body {
             height: 100%;
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            display: flex;
-            flex-direction: column;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--main-bg);
+            color: var(--text);
             overflow: hidden;
-            position: relative;
         }
 
-        /* Sidebar Menu */
+        /* ── LAYOUT ─────────────────────────────── */
+        .app {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ── SIDEBAR ────────────────────────────── */
         .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 260px;
-            background: #ffffff;
-            border-right: 1px solid #e5e5e7;
-            transform: translateX(-100%);
-            transition: transform 0.3s ease;
-            z-index: 10000;
+            width: var(--sidebar-w);
+            background: var(--sidebar-bg);
             display: flex;
             flex-direction: column;
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
+            z-index: 200;
+            transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
         }
 
-        .sidebar.active {
-            transform: translateX(0);
-        }
-
-        .sidebar-header {
-            padding: 20px;
-            border-bottom: 1px solid #e5e5e7;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .sidebar-logo {
+        .sidebar-top {
+            padding: 14px 12px 10px;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .sidebar-logo img {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-        }
-
-        .sidebar-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .sidebar-close {
+        .sidebar-logo {
             width: 32px;
             height: 32px;
-            border: none;
+            border-radius: 7px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .sidebar-brand {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--sidebar-text);
+            letter-spacing: -0.01em;
+        }
+
+        .new-chat-btn {
+            margin: 0 8px 8px;
+            padding: 9px 14px;
             background: transparent;
+            border: 1px solid rgba(255,255,255,0.13);
+            border-radius: 9px;
+            color: var(--sidebar-text);
+            font-size: 13.5px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            justify-content: center;
-            border-radius: 6px;
-            transition: background 0.2s;
+            gap: 8px;
+            transition: background 0.15s;
+            width: calc(100% - 16px);
         }
+        .new-chat-btn:hover { background: var(--sidebar-hover); }
 
-        .sidebar-close:hover {
-            background: #e5e5e7;
+        .sidebar-section {
+            padding: 14px 16px 5px;
+            font-size: 10.5px;
+            font-weight: 600;
+            color: var(--sidebar-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
         }
 
         .sidebar-nav {
             flex: 1;
             overflow-y: auto;
-            padding: 10px;
+            padding: 2px 8px;
         }
+        .sidebar-nav::-webkit-scrollbar { width: 3px; }
+        .sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
 
         .nav-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            margin-bottom: 4px;
-            border-radius: 10px;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.2s;
-            color: #333;
+            color: var(--sidebar-muted);
+            font-size: 13.5px;
             text-decoration: none;
+            transition: all 0.15s;
+            margin-bottom: 1px;
+            user-select: none;
+        }
+        .nav-item:hover { background: var(--sidebar-hover); color: var(--sidebar-text); }
+        .nav-item.active { background: var(--sidebar-active); color: var(--sidebar-text); }
+        .nav-icon { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
+
+        .sidebar-footer {
+            padding: 10px 12px 16px;
+            border-top: 1px solid rgba(255,255,255,0.07);
         }
 
-        .nav-item:hover {
-            background: #e9ecef;
+        .status-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            color: var(--sidebar-muted);
         }
 
-        .nav-item.active {
-            background: #007aff;
-            color: white;
+        .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            transition: background 0.3s;
+        }
+        .dot.online  { background: #22c55e; animation: pulse 2s infinite; }
+        .dot.offline { background: #ef4444; }
+
+        @keyframes pulse {
+            0%,100% { opacity:1; }
+            50%      { opacity:0.45; }
         }
 
-        .nav-icon {
-            font-size: 20px;
-            width: 24px;
-            text-align: center;
+        /* ── MAIN ───────────────────────────────── */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            background: var(--main-bg);
         }
 
-        .nav-text {
-            font-size: 15px;
-            font-weight: 500;
+        /* Mobile header */
+        .mob-header {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            padding: 11px 16px;
+            border-bottom: 1px solid var(--border);
+            background: #fff;
+            z-index: 10;
         }
 
-        /* Menu Toggle Button */
-        .menu-toggle {
-            position: fixed;
-            left: 20px;
-            top: 20px;
-            width: 44px;
-            height: 44px;
-            background: white;
-            border: 1px solid #e5e5e7;
-            border-radius: 10px;
+        .mob-menu {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: transparent;
             cursor: pointer;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            transition: all 0.2s;
-            z-index: 9999;
-            padding: 4px;
+            font-size: 18px;
+            color: var(--text);
+            flex-shrink: 0;
+            transition: background 0.15s;
+        }
+        .mob-menu:hover { background: var(--msg-bg); }
+
+        .mob-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
         }
 
-        .menu-toggle:hover {
-            background: #f7f7f8;
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        /* ── MESSAGES ────────────────────────────── */
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+        .messages::-webkit-scrollbar { width: 5px; }
+        .messages::-webkit-scrollbar-thumb { background: #ddd; border-radius: 3px; }
+
+        /* Empty / welcome state */
+        .welcome {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100%;
+            gap: 14px;
+            padding: 32px 24px 100px;
+            text-align: center;
         }
 
-        .menu-toggle img {
+        .welcome-logo {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            object-fit: cover;
+        }
+
+        .welcome h2 {
+            font-size: 21px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.02em;
+        }
+
+        .welcome p {
+            font-size: 14px;
+            color: var(--text-muted);
+            max-width: 340px;
+            line-height: 1.55;
+        }
+
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            max-width: 500px;
+            margin-top: 4px;
+        }
+
+        .chip {
+            padding: 8px 14px;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            color: var(--text-muted);
+            background: #fff;
+            transition: all 0.18s;
+            white-space: nowrap;
+        }
+        .chip:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: #fdf6ee;
+        }
+
+        /* Message row */
+        .msg-row {
+            padding: 6px 0;
+            animation: fadeUp 0.22s ease-out;
+        }
+
+        @keyframes fadeUp {
+            from { opacity:0; transform:translateY(7px); }
+            to   { opacity:1; transform:translateY(0); }
+        }
+
+        .msg-inner {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 0 28px;
+        }
+
+        /* User bubble */
+        .user-row .msg-inner {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .user-bubble {
+            background: var(--msg-bg);
+            color: var(--text);
+            padding: 11px 17px;
+            border-radius: 18px 18px 4px 18px;
+            max-width: 75%;
+            font-size: 15px;
+            line-height: 1.55;
+            word-break: break-word;
+        }
+
+        /* Bot row */
+        .bot-row .msg-inner {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+            margin-top: 1px;
+            background: #f0e0c8;
+        }
+
+        .avatar img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 6px;
         }
 
-        /* Overlay */
-        .sidebar-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.3);
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s;
-            z-index: 9998;
+        .bot-text {
+            flex: 1;
+            font-size: 15px;
+            line-height: 1.65;
+            color: var(--text);
+            word-break: break-word;
+            min-width: 0;
+            padding: 2px 0;
         }
 
-        .sidebar-overlay.active {
-            opacity: 1;
-            visibility: visible;
+        .bot-text strong { font-weight: 600; color: #111; }
+        .bot-text em     { color: var(--text-muted); font-style: italic; }
+        .bot-text code   {
+            background: #f0f0f0;
+            padding: 1px 5px;
+            border-radius: 4px;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 13px;
         }
 
-        /* Simple header for connection status */
-        .status-bar {
-            padding: 10px 20px;
-            background: #fafafa;
-            border-bottom: 1px solid #f0f0f0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            min-height: 50px;
+        /* Typing cursor */
+        .tcursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.1em;
+            background: var(--accent);
+            animation: blink 0.9s infinite;
+            margin-left: 1px;
+            vertical-align: text-bottom;
+        }
+        @keyframes blink {
+            0%,49% { opacity:1; }
+            50%,100% { opacity:0; }
         }
 
-        .header-left {
+        /* ── TYPING DOTS ────────────────────────── */
+        .typing-wrap {
+            display: none;
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 4px 28px 10px;
+        }
+
+        .typing-inner {
             display: flex;
             align-items: center;
             gap: 12px;
         }
 
-        .logo-img {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            object-fit: cover;
-        }
-
-        .company-info {
+        .tdots {
             display: flex;
-            flex-direction: column;
-        }
-
-        .company-name {
-            font-size: 16px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .company-slogan {
-            font-size: 12px;
-            color: #666;
-            font-style: italic;
-        }
-
-        .connection-status {
-            font-size: 12px;
-            color: #8e8e93;
-            display: flex;
-            align-items: center;
             gap: 5px;
+            padding: 10px 2px;
         }
 
-        .status-dot {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-        }
-
-        .status-dot.online {
-            background: #34c759;
-            animation: pulse 2s infinite;
-        }
-
-        .status-dot.offline {
-            background: #ff3b30;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        /* Chat messages area */
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 25px 40px 20px;
-            scroll-behavior: smooth;
-            background: #fafafa;
-        }
-
-        .chat-messages::-webkit-scrollbar {
+        .tdots span {
             width: 6px;
-        }
-
-        .chat-messages::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .chat-messages::-webkit-scrollbar-thumb {
-            background: #ddd;
-            border-radius: 3px;
-        }
-
-        .chat-messages::-webkit-scrollbar-thumb:hover {
+            height: 6px;
+            border-radius: 50%;
             background: #bbb;
+            animation: dotBounce 1.3s infinite ease-in-out;
+        }
+        .tdots span:nth-child(2) { animation-delay: 0.18s; }
+        .tdots span:nth-child(3) { animation-delay: 0.36s; }
+
+        @keyframes dotBounce {
+            0%,60%,100% { transform: scale(0.75); opacity:0.4; }
+            30%          { transform: scale(1.2);  opacity:1;   }
         }
 
-        /* Messages */
-        .message {
-            margin-bottom: 20px;
-            animation: fadeInUp 0.3s ease-out;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .user-message {
-            text-align: right;
-        }
-
-        .user-message .message-content {
-            display: inline-block;
-            background: #007aff;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 20px 20px 4px 20px;
-            max-width: 70%;
-            word-wrap: break-word;
-        }
-
-        .bot-message {
-            text-align: left;
-        }
-
-        .bot-message .message-content {
-            display: inline-block;
-            background: #e9ecef;
-            color: #333;
-            padding: 12px 20px;
-            border-radius: 20px 20px 20px 4px;
-            max-width: 70%;
-            word-wrap: break-word;
-            white-space: pre-wrap;
-            line-height: 1.6;
-            position: relative;
-        }
-
-        /* Typing cursor for streaming */
-        .typing-cursor {
-            display: inline-block;
-            width: 2px;
-            height: 1.2em;
-            background-color: #007aff;
-            animation: blink 1s infinite;
-            margin-left: 2px;
-            vertical-align: text-bottom;
-        }
-
-        @keyframes blink {
-            0%, 49% { opacity: 1; }
-            50%, 100% { opacity: 0; }
-        }
-
-        /* Message formatting */
-        .bot-message .message-content strong {
-            color: #000;
-            font-weight: 600;
-        }
-
-        .bot-message .message-content em {
-            color: #666;
-            font-style: italic;
-        }
-
-        .bot-message .message-content ul,
-        .bot-message .message-content ol {
-            margin: 10px 0;
-            padding-left: 20px;
-        }
-
-        .bot-message .message-content li {
-            margin: 5px 0;
-        }
-
-        .bot-message .message-content code {
-            background: #f4f4f4;
-            padding: 2px 4px;
-            border-radius: 3px;
-            font-family: monospace;
-            font-size: 0.9em;
-        }
-
-        /* Quick actions */
-        .quick-actions {
-            padding: 10px 40px;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            background: white;
-            border-top: 1px solid #f0f0f0;
-        }
-
-        .quick-action {
-            padding: 8px 16px;
-            background: #f0f0f5;
-            border: 1px solid #e5e5e7;
-            border-radius: 20px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .quick-action:hover {
-            background: #007aff;
-            color: white;
-            border-color: #007aff;
-        }
-
-        /* Typing indicator */
-        .typing-indicator {
-            display: none;
-            padding: 0 40px 20px;
-            animation: fadeInUp 0.3s ease-out;
-        }
-
-        .typing-indicator span {
-            display: inline-block;
-            background: #e9ecef;
-            padding: 12px 20px;
-            border-radius: 20px 20px 20px 4px;
-            color: #8e8e93;
-            font-style: italic;
-            font-size: 14px;
-        }
-
-        /* Input area */
+        /* ── INPUT AREA ─────────────────────────── */
         .input-area {
-            padding: 20px 40px 30px;
-            background: white;
-            border-top: 1px solid #f0f0f0;
+            padding: 10px 28px 22px;
+            background: #fff;
         }
 
-        .input-group {
-            position: relative;
-            background: #f7f7f8;
-            border-radius: 32px;
-            border: 1px solid #e5e5e7;
-            transition: all 0.2s ease;
+        .input-wrap {
+            max-width: 720px;
+            margin: 0 auto;
+        }
+
+        .input-box {
             display: flex;
             align-items: center;
-            padding: 0 8px 0 24px;
-            min-height: 56px;
+            gap: 8px;
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 8px 10px 8px 18px;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
         }
-
-        .input-group:focus-within {
-            border-color: #007aff;
-            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+        .input-box:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(207,140,74,0.13);
+            background: #fff;
         }
 
         #userInput {
             flex: 1;
             border: none;
             background: transparent;
-            padding: 18px 0;
-            font-size: 17px;
-            outline: none;
-            color: #1a1a1a;
-            line-height: 1.4;
-        }
-
-        #userInput::placeholder {
-            color: #8e8e93;
-        }
-
-        .btn-primary {
-            background: #007aff;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 24px;
             font-size: 15px;
-            font-weight: 500;
+            color: var(--text);
+            outline: none;
+            line-height: 1.5;
+            padding: 5px 0;
+            min-height: 30px;
+        }
+        #userInput::placeholder { color: #aaa; }
+
+        .send-btn {
+            width: 34px;
+            height: 34px;
+            border: none;
+            border-radius: 9px;
+            background: var(--text);
+            color: #fff;
             cursor: pointer;
-            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: background 0.2s, opacity 0.2s;
+        }
+        .send-btn:hover:not(:disabled) { background: #333; }
+        .send-btn:disabled { background: #ccc; cursor: not-allowed; }
+
+        .send-btn svg { width: 15px; height: 15px; fill: currentColor; }
+
+        .input-hint {
+            text-align: center;
+            font-size: 11.5px;
+            color: #bbb;
+            margin-top: 7px;
         }
 
-        .btn-primary:hover {
-            background: #0056b3;
+        /* ── OVERLAY (mobile) ───────────────────── */
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 150;
+            opacity: 0;
+            transition: opacity 0.28s;
         }
+        .overlay.show { opacity: 1; pointer-events: auto; }
 
-        .btn-primary:disabled {
-            background: #c7c7cc;
-            cursor: not-allowed;
-        }
-
-        /* Responsive */
+        /* ── RESPONSIVE ─────────────────────────── */
         @media (max-width: 768px) {
-            .container {
-                padding: 0;
+            .sidebar {
+                position: fixed;
+                inset: 0 auto 0 0;
+                height: 100%;
+                transform: translateX(-100%);
             }
+            .sidebar.open { transform: translateX(0); }
 
-            .chat-container {
-                border-radius: 0;
-            }
-            
-            .chat-messages {
-                padding: 20px;
-            }
-            
-            .input-area {
-                padding: 15px 20px 20px;
-            }
+            .overlay { display: block; }
 
-            .quick-actions {
-                padding: 10px 20px;
-            }
-            
-            .message-content {
-                max-width: 85% !important;
-            }
+            .mob-header { display: flex; }
 
-            .typing-indicator {
-                padding: 0 20px 20px;
-            }
+            .msg-inner { padding: 0 16px; }
+            .typing-wrap { padding: 4px 16px 10px; }
+            .input-area { padding: 8px 16px 20px; }
 
-            .company-slogan {
-                display: none;
-            }
-
-            .menu-toggle {
-                left: 10px;
-                top: 10px;
-                width: 40px;
-                height: 40px;
-            }
+            .user-bubble { max-width: 88%; }
         }
     </style>
 </head>
 <body>
-    <!-- Menu Toggle Button -->
-    <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
-        <img src="https://i.ibb.co/HpP19dtk/image.png" alt="DECOFI Menu">
-    </button>
+<div class="app">
 
-    <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <div class="sidebar-logo">
-                <img src="https://i.ibb.co/HpP19dtk/image.png" alt="DECOFI">
-                <span class="sidebar-title">DECOFI</span>
-            </div>
-            <button class="sidebar-close" onclick="toggleSidebar()">
-                ✕
-            </button>
+    <!-- ── SIDEBAR ── -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-top">
+            <img src="https://i.ibb.co/HpP19dtk/image.png" alt="DECOFI" class="sidebar-logo">
+            <span class="sidebar-brand">DECOFI</span>
         </div>
+
+        <button class="new-chat-btn" onclick="newChat()">
+            <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+            </svg>
+            Cuộc trò chuyện mới
+        </button>
+
+        <div class="sidebar-section">Chức năng</div>
         <nav class="sidebar-nav">
-            <a href="#" class="nav-item active" onclick="selectNavItem(this, 'dự án')">
-                <span class="nav-icon">📁</span>
-                <span class="nav-text">Dự án</span>
+            <a href="#" class="nav-item active" onclick="selectNav(this,'dự án')">
+                <span class="nav-icon">📁</span><span>Dự án</span>
             </a>
-            <a href="#" class="nav-item" onclick="selectNavItem(this, 'thiết bị')">
-                <span class="nav-icon">🏗️</span>
-                <span class="nav-text">Thiết bị</span>
+            <a href="#" class="nav-item" onclick="selectNav(this,'thiết bị')">
+                <span class="nav-icon">🏗️</span><span>Thiết bị</span>
             </a>
-            <a href="#" class="nav-item" onclick="selectNavItem(this, 'ngân sách')">
-                <span class="nav-icon">💰</span>
-                <span class="nav-text">Ngân sách</span>
+            <a href="#" class="nav-item" onclick="selectNav(this,'ngân sách')">
+                <span class="nav-icon">💰</span><span>Ngân sách</span>
             </a>
-            <a href="#" class="nav-item" onclick="selectNavItem(this, 'tồn kho')">
-                <span class="nav-icon">📦</span>
-                <span class="nav-text">Tồn kho</span>
+            <a href="#" class="nav-item" onclick="selectNav(this,'tồn kho')">
+                <span class="nav-icon">📦</span><span>Tồn kho</span>
             </a>
-            <a href="#" class="nav-item" onclick="selectNavItem(this, 'blog')">
-                <span class="nav-icon">📝</span>
-                <span class="nav-text">Blog</span>
+            <a href="#" class="nav-item" onclick="selectNav(this,'blog')">
+                <span class="nav-icon">📝</span><span>Blog</span>
             </a>
         </nav>
-    </div>
 
-    <!-- Sidebar Overlay -->
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+        <div class="sidebar-footer">
+            <div class="status-row">
+                <span class="dot offline" id="statusDot"></span>
+                <span id="statusText">Đang kết nối...</span>
+            </div>
+        </div>
+    </aside>
 
-    <div class="container">
-        <div class="chat-container">
-            <!-- Status bar -->
-            <div class="status-bar">
-                <div class="header-left">
-                   <!-- <img src="https://i.ibb.co/HpP19dtk/image.png" alt="DECOFI Logo" class="logo-img"> -->
-                    <div class="company-info">
-                      <!--  <div class="company-name">DECOFI Assistant</div>-->
-                        <div class="company-slogan">Xây dựng chỉ tín - Khẳng định niềm tin</div>
-                    </div>
-                </div>
-                <div class="connection-status">
-                    <span class="status-dot offline" id="statusDot"></span>
-                    <span id="statusText">Đang kết nối...</span>
-                </div>
-            </div>
-            
-            <!-- Chat messages -->
-            <div class="chat-messages" id="chatMessages">
-                <!-- Messages will be added here -->
-            </div>
-            
-            
-            
-            <!-- Typing indicator -->
-            <div class="typing-indicator" id="typingIndicator">
-                <span>PTB đang soạn tin...</span>
-            </div>
-            
-            <!-- Input area -->
-            <div class="input-area">
-                <div class="input-group">
-                    <input type="text" 
-                           id="userInput" 
-                           placeholder="Hỏi bất kỳ điều gì..."
-                           onkeypress="if(event.key==='Enter' && !event.shiftKey) sendMessage()">
-                    <button class="btn-primary" id="sendButton" onclick="sendMessage()">
-                        Gửi
-                    </button>
+    <!-- Overlay (mobile) -->
+    <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+    <!-- ── MAIN ── -->
+    <main class="main">
+
+        <!-- Mobile header -->
+        <div class="mob-header">
+            <button class="mob-menu" onclick="toggleSidebar()">☰</button>
+            <span class="mob-title">DECOFI Assistant</span>
+        </div>
+
+        <!-- Messages -->
+        <div class="messages" id="messages">
+            <div class="welcome" id="welcome">
+                <img src="https://i.ibb.co/HpP19dtk/image.png" alt="DECOFI" class="welcome-logo">
+                <h2>Xin chào! Tôi có thể giúp gì cho bạn?</h2>
+                <p>Trợ lý ảo phòng thiết bị DECOFI<br>Xây dựng chỉ tín · Khẳng định niềm tin</p>
+                <div class="chips">
+                    <span class="chip" onclick="sendQuick('tồn kho xi măng')">📦 Tồn kho xi măng</span>
+                    <span class="chip" onclick="sendQuick('kiểm tra tồn kho cùm xoay')">🔍 Tồn kho cùm xoay</span>
+                    <span class="chip" onclick="sendQuick('thông tin công ty')">🏢 Thông tin công ty</span>
+                    <span class="chip" onclick="sendQuick('tồn kho ván khuôn dự án pi city')">🏗️ Tồn kho theo dự án</span>
                 </div>
             </div>
         </div>
-    </div>
 
-    <script>
-        // Backend URL configuration
-        const BACKEND_URL = window.location.hostname === 'localhost'
-            ? 'http://localhost:3000'
-            : 'https://chatbot-backend-viet.onrender.com';
+        <!-- Typing indicator -->
+        <div class="typing-wrap" id="typingIndicator">
+            <div class="typing-inner">
+                <div class="avatar">
+                    <img src="https://i.ibb.co/HpP19dtk/image.png" alt="PTB">
+                </div>
+                <div class="tdots">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+        </div>
 
-        let isConnected = false;
-        let isFirstLoad = true;
-        let currentEventSource = null;
-        let typingTimeout = null;
+        <!-- Input -->
+        <div class="input-area">
+            <div class="input-wrap">
+                <div class="input-box">
+                    <input type="text" id="userInput"
+                           placeholder="Nhập câu hỏi của bạn..."
+                           onkeypress="if(event.key==='Enter'){event.preventDefault();sendMessage();}">
+                    <button class="send-btn" id="sendButton" onclick="sendMessage()">
+                        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                    </button>
+                </div>
+                <p class="input-hint">PTB DECOFI Assistant · Pure NLP</p>
+            </div>
+        </div>
 
-        // Format message content with proper HTML
-        function formatMessageContent(content) {
-            if (!content) return '';
-            
-            return content
-                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-                .replace(/\*(.+?)\*/g, '<em>$1</em>')
-                .replace(/`(.+?)`/g, '<code>$1</code>')
-                .replace(/\n/g, '<br>');
+    </main>
+</div>
+
+<script>
+    const BACKEND_URL = window.location.hostname === 'localhost'
+        ? 'http://localhost:3000'
+        : 'https://chatbot-backend-viet.onrender.com';
+
+    let isConnected = false;
+    let currentEventSource = null;
+    let typingTimeout = null;
+
+    // ── FORMAT ──────────────────────────────────────
+    function fmt(text) {
+        if (!text) return '';
+        return text
+            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.+?)\*/g,     '<em>$1</em>')
+            .replace(/`(.+?)`/g,       '<code>$1</code>')
+            .replace(/\n/g,            '<br>');
+    }
+
+    // ── WELCOME ──────────────────────────────────────
+    function hideWelcome() {
+        const w = document.getElementById('welcome');
+        if (w) w.remove();
+    }
+
+    // ── ADD USER MESSAGE ─────────────────────────────
+    function addUserMessage(text) {
+        hideWelcome();
+        const container = document.getElementById('messages');
+        const row = document.createElement('div');
+        row.className = 'msg-row user-row';
+        row.innerHTML = `<div class="msg-inner"><div class="user-bubble"></div></div>`;
+        row.querySelector('.user-bubble').textContent = text;
+        container.appendChild(row);
+        container.scrollTop = container.scrollHeight;
+    }
+
+    // ── ADD BOT MESSAGE ──────────────────────────────
+    function addBotMessage(html) {
+        hideWelcome();
+        const container = document.getElementById('messages');
+        const row = document.createElement('div');
+        row.className = 'msg-row bot-row';
+        row.innerHTML = `
+            <div class="msg-inner">
+                <div class="avatar"><img src="https://i.ibb.co/HpP19dtk/image.png" alt="PTB"></div>
+                <div class="bot-text">${fmt(html)}</div>
+            </div>`;
+        container.appendChild(row);
+        container.scrollTop = container.scrollHeight;
+    }
+
+    // ── STREAMING MESSAGE ────────────────────────────
+    function addStreamingMessage(content, id, done = false) {
+        hideWelcome();
+        const container = document.getElementById('messages');
+        let row = document.getElementById(id);
+
+        if (!row) {
+            row = document.createElement('div');
+            row.id = id;
+            row.className = 'msg-row bot-row';
+            row.innerHTML = `
+                <div class="msg-inner">
+                    <div class="avatar"><img src="https://i.ibb.co/HpP19dtk/image.png" alt="PTB"></div>
+                    <div class="bot-text"></div>
+                </div>`;
+            container.appendChild(row);
         }
 
-        // Add message to chat
-        function addMessage(content, isUser = false, messageId = null) {
-            const messagesDiv = document.getElementById('chatMessages');
-            
-            let messageDiv;
-            if (messageId) {
-                messageDiv = document.getElementById(messageId);
-                if (!messageDiv) {
-                    messageDiv = document.createElement('div');
-                    messageDiv.id = messageId;
-                    messageDiv.className = `message ${isUser ? 'user' : 'bot'}-message`;
-                    messagesDiv.appendChild(messageDiv);
-                }
-            } else {
-                messageDiv = document.createElement('div');
-                messageDiv.className = `message ${isUser ? 'user' : 'bot'}-message`;
-                messagesDiv.appendChild(messageDiv);
-            }
-            
-            const contentDiv = document.createElement('div');
-            contentDiv.className = 'message-content';
-            
-            if (isUser) {
-                contentDiv.textContent = content;
-            } else {
-                contentDiv.innerHTML = formatMessageContent(content);
-            }
-            
-            messageDiv.innerHTML = '';
-            messageDiv.appendChild(contentDiv);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            
-            return messageDiv;
+        const textEl = row.querySelector('.bot-text');
+        textEl.innerHTML = fmt(content) + (done ? '' : '<span class="tcursor"></span>');
+        container.scrollTop = container.scrollHeight;
+    }
+
+    // ── HEALTH CHECK ─────────────────────────────────
+    async function checkHealth() {
+        const dot  = document.getElementById('statusDot');
+        const text = document.getElementById('statusText');
+        try {
+            const res = await fetch(`${BACKEND_URL}/health`, { mode: 'cors' });
+            if (!res.ok) throw new Error();
+            isConnected = true;
+            dot.className  = 'dot online';
+            text.textContent = 'Đã kết nối';
+        } catch {
+            isConnected = false;
+            dot.className  = 'dot offline';
+            text.textContent = 'Mất kết nối';
+        }
+    }
+
+    // ── SEND ─────────────────────────────────────────
+    async function sendMessage() {
+        const input  = document.getElementById('userInput');
+        const btn    = document.getElementById('sendButton');
+        const typing = document.getElementById('typingIndicator');
+        const msg    = input.value.trim();
+        if (!msg) return;
+
+        if (!isConnected) {
+            alert('⚠️ Chưa kết nối được với server!');
+            return;
         }
 
-        // Add streaming message with typing cursor
-        function addStreamingMessage(content, messageId, isComplete = false) {
-            const messagesDiv = document.getElementById('chatMessages');
-            
-            let messageDiv = document.getElementById(messageId);
-            if (!messageDiv) {
-                messageDiv = document.createElement('div');
-                messageDiv.id = messageId;
-                messageDiv.className = 'message bot-message';
-                messagesDiv.appendChild(messageDiv);
-            }
-            
-            const contentDiv = document.createElement('div');
-            contentDiv.className = 'message-content';
-            
-            const formattedContent = formatMessageContent(content);
-            if (!isComplete) {
-                contentDiv.innerHTML = formattedContent + '<span class="typing-cursor"></span>';
-            } else {
-                contentDiv.innerHTML = formattedContent;
-            }
-            
-            messageDiv.innerHTML = '';
-            messageDiv.appendChild(contentDiv);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        addUserMessage(msg);
+        input.value = '';
+        input.disabled = true;
+        btn.disabled   = true;
+        typing.style.display = 'block';
+
+        await new Promise(r => { typingTimeout = setTimeout(r, 10); });
+
+        try {
+            await streamMessage(msg);
+        } catch (err) {
+            addBotMessage(`❌ **Lỗi:** ${err.message}\n\n*Vui lòng thử lại sau.*`);
+        } finally {
+            if (typingTimeout) { clearTimeout(typingTimeout); typingTimeout = null; }
+            if (!currentEventSource) typing.style.display = 'none';
+            input.disabled = false;
+            btn.disabled   = false;
+            input.focus();
         }
+    }
 
-        // Check backend connection
-        async function checkBackendHealth() {
-            const statusDot = document.getElementById('statusDot');
-            const statusText = document.getElementById('statusText');
+    async function streamMessage(msg) {
+        if (currentEventSource) currentEventSource.close();
 
+        const id = 'stream-' + Date.now();
+        let full = '';
+        let gotFirst = false;
+
+        currentEventSource = new EventSource(
+            `${BACKEND_URL}/api/chat/stream?question=${encodeURIComponent(msg)}`
+        );
+
+        currentEventSource.onmessage = e => {
             try {
-                const response = await fetch(`${BACKEND_URL}/health`, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json'
-                    },
-                    mode: 'cors'
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    isConnected = true;
-                    statusDot.className = 'status-dot online';
-                    statusText.textContent = 'Đã kết nối';
-                    
-                    if (isFirstLoad) {
-                        isFirstLoad = false;
-                        showInitialGreeting();
-                    }
-                    
-                    console.log('✅ Backend connected:', data);
-                } else {
-                    throw new Error(`HTTP ${response.status}`);
+                if (!gotFirst) {
+                    document.getElementById('typingIndicator').style.display = 'none';
+                    gotFirst = true;
                 }
-            } catch (error) {
-                isConnected = false;
-                statusDot.className = 'status-dot offline';
-                statusText.textContent = 'Mất kết nối';
-                console.error('❌ Backend error:', error);
-            }
-        }
-
-        // Show initial greeting
-        /**
-         * Hiển thị lời chào ban đầu khi người dùng bắt đầu cuộc trò chuyện.
-         * Tin nhắn này giới thiệu về trợ lý ảo và gợi ý các câu hỏi mẫu.
-         */
-        function showInitialGreeting() {
-            // Nội dung tin nhắn chào mừng sử dụng cú pháp Markdown để định dạng
-            const greetingMessage = `📦Xin chào! Tôi là trợ lý ảo phòng thiết bị DECOFI, tôi đã sẵn sàng hổ trợ bạn!`;
-
-            // Gọi hàm để hiển thị tin nhắn trong giao diện chat
-            addMessage(greetingMessage);
-        }
-
-        // Send message function
-        async function sendMessage() {
-            if (!isConnected) {
-                alert('⚠️ Chưa kết nối được với server!\n\nVui lòng kiểm tra:\n1. Server backend đang chạy\n2. URL kết nối đúng');
-                return;
-            }
-
-            const input = document.getElementById('userInput');
-            const sendButton = document.getElementById('sendButton');
-            const message = input.value.trim();
-            
-            if (!message) return;
-
-            // Add user message
-            addMessage(message, true);
-            
-            // Clear input and disable
-            input.value = '';
-            input.disabled = true;
-            sendButton.disabled = true;
-            
-            // Show typing indicator
-            const typingIndicator = document.getElementById('typingIndicator');
-            typingIndicator.style.display = 'block';
-
-            // Add delay before streaming (1.5 seconds)
-            await new Promise(resolve => {
-                typingTimeout = setTimeout(resolve, 10);
-            });
-
-            try {
-                // Always use streaming
-                await sendStreamingMessage(message);
-            } catch (error) {
-                console.error('Chat error:', error);
-                addMessage(`❌ **Lỗi:** ${error.message}\n\n*Vui lòng thử lại sau.*`);
-            } finally {
-                // Clear timeout if exists
-                if (typingTimeout) {
-                    clearTimeout(typingTimeout);
-                    typingTimeout = null;
-                }
-                // Hide typing only if not streaming (error case)
-                if (!currentEventSource) {
-                    typingIndicator.style.display = 'none';
-                }
-                input.disabled = false;
-                sendButton.disabled = false;
-                input.focus();
-            }
-        }
-
-        // Send streaming message
-        async function sendStreamingMessage(message) {
-            // Close any existing EventSource
-            if (currentEventSource) {
-                currentEventSource.close();
-            }
-
-            // Create unique message ID for streaming
-            const messageId = 'stream-' + Date.now();
-            let fullResponse = '';
-            let firstChunkReceived = false;
-
-            // Create EventSource for streaming
-            currentEventSource = new EventSource(
-                `${BACKEND_URL}/api/chat/stream?question=${encodeURIComponent(message)}`
-            );
-
-            // Handle incoming chunks
-            currentEventSource.onmessage = (event) => {
-                try {
-                    // Hide typing indicator when first chunk arrives
-                    if (!firstChunkReceived) {
-                        document.getElementById('typingIndicator').style.display = 'none';
-                        firstChunkReceived = true;
-                    }
-                    
-                    const data = JSON.parse(event.data);
-                    fullResponse += data.chunk;
-                    
-                    // Update message with typing effect
-                    addStreamingMessage(fullResponse, messageId, data.isComplete);
-                    
-                } catch (error) {
-                    console.error('Error parsing stream data:', error);
-                }
-            };
-
-            // Handle completion
-            currentEventSource.addEventListener('complete', (event) => {
-                currentEventSource.close();
-                currentEventSource = null;
-                
-                // Remove typing cursor
-                addStreamingMessage(fullResponse, messageId, true);
-                
-                console.log('Streaming completed');
-            });
-
-            // Handle errors
-            currentEventSource.onerror = (error) => {
-                console.error('Streaming error:', error);
-                currentEventSource.close();
-                currentEventSource = null;
-                
-                // Hide typing indicator on error
-                document.getElementById('typingIndicator').style.display = 'none';
-                
-                // If no response received, fall back to normal API
-                if (!fullResponse) {
-                    sendNormalMessage(message).catch(err => {
-                        addMessage(`❌ **Lỗi streaming:** Không thể nhận phản hồi từ server.`);
-                    });
-                } else {
-                    // Just remove cursor if we have partial response
-                    addStreamingMessage(fullResponse, messageId, true);
-                }
-            };
-        }
-
-        // Send normal message (fallback)
-        async function sendNormalMessage(message) {
-            const response = await fetch(`${BACKEND_URL}/api/chat`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                mode: 'cors',
-                body: JSON.stringify({
-                    question: message
-                })
-            });
-
-            const data = await response.json();
-            
-            if (data.success && data.answer) {
-                addMessage(data.answer);
-            } else {
-                throw new Error(data.error || 'Không có phản hồi từ server');
-            }
-        }
-
-        // Send quick action message
-        function sendQuickMessage(message) {
-            document.getElementById('userInput').value = message;
-            sendMessage();
-        }
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            // Ctrl/Cmd + Enter to send
-            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-                sendMessage();
-            }
-            
-            // ESC to clear input
-            if (e.key === 'Escape') {
-                document.getElementById('userInput').value = '';
-            }
-        });
-
-        // Initialize on load
-        window.addEventListener('load', async () => {
-            await checkBackendHealth();
-
-            // Set up periodic health checks
-            setInterval(checkBackendHealth, 30000);
-
-            // Focus input
-            document.getElementById('userInput').focus();
-
-            // Show sidebar by default on desktop, keep hidden on mobile
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            const applySidebarState = () => {
-                if (window.innerWidth >= 768) {
-                    sidebar.classList.add('active');
-                    overlay.classList.remove('active');
-                } else {
-                    sidebar.classList.remove('active');
-                    overlay.classList.remove('active');
-                }
-            };
-
-            // Apply initial state
-            applySidebarState();
-
-            // Update on resize (useful when user resizes desktop window)
-            window.addEventListener('resize', () => {
-                applySidebarState();
-            });
-        });
-
-        // Clean up EventSource on page unload
-        window.addEventListener('beforeunload', () => {
-            if (currentEventSource) {
-                currentEventSource.close();
-            }
-            if (typingTimeout) {
-                clearTimeout(typingTimeout);
-            }
-        });
-
-        // Debug functions
-        window.debug = {
-            testConnection: checkBackendHealth,
-            backend: BACKEND_URL,
-            sendTest: () => sendQuickMessage('test'),
-            testStream: () => sendQuickMessage('tồn kho xi măng')
+                const data = JSON.parse(e.data);
+                full += data.chunk;
+                addStreamingMessage(full, id, data.isComplete);
+            } catch {}
         };
 
-        // Sidebar functions
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
-        }
+        currentEventSource.addEventListener('complete', () => {
+            currentEventSource.close();
+            currentEventSource = null;
+            addStreamingMessage(full, id, true);
+        });
 
-        function selectNavItem(element, section) {
-            // Remove active class from all items
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            // Add active class to clicked item
-            element.classList.add('active');
-            
-            // Close sidebar
-            toggleSidebar();
-            
-            // Here you can add logic to handle section changes
-            console.log('Selected section:', section);
-            
-            // Optional: Show a message in chat
-            addMessage(`Bạn đã chọn mục: **${section}**. Tính năng này sẽ được cập nhật sau.`);
-        }
-    </script>
+        currentEventSource.onerror = () => {
+            currentEventSource.close();
+            currentEventSource = null;
+            document.getElementById('typingIndicator').style.display = 'none';
+            if (!full) {
+                fallbackMessage(msg).catch(() =>
+                    addBotMessage('❌ **Lỗi:** Không thể nhận phản hồi từ server.')
+                );
+            } else {
+                addStreamingMessage(full, id, true);
+            }
+        };
+    }
+
+    async function fallbackMessage(msg) {
+        const res = await fetch(`${BACKEND_URL}/api/chat`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            mode: 'cors',
+            body: JSON.stringify({ question: msg })
+        });
+        const data = await res.json();
+        if (data.success && data.answer) addBotMessage(data.answer);
+        else throw new Error(data.error || 'Không có phản hồi');
+    }
+
+    function sendQuick(msg) {
+        document.getElementById('userInput').value = msg;
+        sendMessage();
+    }
+
+    // ── NEW CHAT ─────────────────────────────────────
+    function newChat() {
+        if (currentEventSource) { currentEventSource.close(); currentEventSource = null; }
+        document.getElementById('messages').innerHTML = `
+            <div class="welcome" id="welcome">
+                <img src="https://i.ibb.co/HpP19dtk/image.png" alt="DECOFI" class="welcome-logo">
+                <h2>Xin chào! Tôi có thể giúp gì cho bạn?</h2>
+                <p>Trợ lý ảo phòng thiết bị DECOFI<br>Xây dựng chỉ tín · Khẳng định niềm tin</p>
+                <div class="chips">
+                    <span class="chip" onclick="sendQuick('tồn kho xi măng')">📦 Tồn kho xi măng</span>
+                    <span class="chip" onclick="sendQuick('kiểm tra tồn kho cùm xoay')">🔍 Tồn kho cùm xoay</span>
+                    <span class="chip" onclick="sendQuick('thông tin công ty')">🏢 Thông tin công ty</span>
+                    <span class="chip" onclick="sendQuick('tồn kho ván khuôn dự án pi city')">🏗️ Tồn kho theo dự án</span>
+                </div>
+            </div>`;
+        closeSidebar();
+    }
+
+    // ── SIDEBAR ──────────────────────────────────────
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('overlay').classList.toggle('show');
+    }
+    function closeSidebar() {
+        document.getElementById('sidebar').classList.remove('open');
+        document.getElementById('overlay').classList.remove('show');
+    }
+    function selectNav(el, section) {
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        el.classList.add('active');
+        closeSidebar();
+        console.log('section:', section);
+    }
+
+    // ── KEYBOARD ─────────────────────────────────────
+    document.addEventListener('keydown', e => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') sendMessage();
+        if (e.key === 'Escape') document.getElementById('userInput').value = '';
+    });
+
+    // ── INIT ─────────────────────────────────────────
+    window.addEventListener('load', async () => {
+        await checkHealth();
+        setInterval(checkHealth, 30000);
+        document.getElementById('userInput').focus();
+    });
+
+    window.addEventListener('beforeunload', () => {
+        if (currentEventSource) currentEventSource.close();
+    });
+
+    window.debug = {
+        backend: BACKEND_URL,
+        check: checkHealth,
+        test: () => sendQuick('tồn kho xi măng')
+    };
+</script>
 </body>
 </html>
